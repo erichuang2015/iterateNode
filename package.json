@@ -5,7 +5,7 @@
   "repository": "https://github.com/SimonSavage/iterateNode",
   "files": [
     "dist/iterateNode.css",
-    "dist/iterateNode.js"
+    "dist/iterateNode.min.js"
   ],
   "devDependencies": {
     "grunt": "^0.4.5",
