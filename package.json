@@ -1,0 +1,17 @@
+{
+  "name": "iterateNode",
+  "description": "iterateNode node package",
+  "version": "0.0.1",
+  "repository": "git://github.com/foo/bar.git",
+  "files": [
+    "dist/iterateNode.css",
+    "dist/iterateNode.js"
+  ],
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-cssmin": "^0.13.0",
+    "grunt-contrib-uglify": "^0.7.0",
+    "grunt-debug-task": "^0.1.7"
+  }
+}

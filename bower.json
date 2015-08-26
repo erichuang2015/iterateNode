@@ -1,0 +1,38 @@
+{
+  "name": "iterateNode",
+  "description": "Convert JS object and JSON to html unorder list",
+  "version": "0.0.1",
+  "keywords": [
+    "html",
+    "JSON",
+    "js-object",
+    "JSON-viewer",
+    "js-object-viewer"
+  ],
+  "homepage": "#",
+  "authors": [
+    "Simon Savage <simonsavagerock@gmail.com>"
+  ],
+  "main": [
+    "dist/iterateNode.css",
+    "dist/iterateNode.min.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/foo/bar.git"
+  },
+  "ignore": [
+    "/.*",
+    "/_*"
+  ],
+  "dependencies": {
+  },
+  "gruntFiles" : {
+    "js": {
+      "dist/iterateNode.js": "src/js/*"
+    },
+    "css":{
+      "dist/iterateNode.css": "src/css/*"
+    }
+  }
+}

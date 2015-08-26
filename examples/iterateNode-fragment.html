@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IterateNode Example</title>
+    <!--<link href="../bootstrap/dist/css/bootstrap.css" rel="stylesheet" />-->
+    <link href="../dist/iterateNode.min.css" rel="stylesheet" />
+</head>
+<body>
+
+    <button onclick="action('anlyzJson')">Analyze Json</button>
+    <button onclick="action('anlyzDocument')">Analyze documentElement</button>
+    <button onclick="action('imadiv')">Analyze imadiv</button>
+    <div id="imadiv">
+        imadiv
+        <p>
+            <b>imadiv<span>imadiv</span></b>
+        </p>
+    </div>
+    <pre id="parseJs">
+
+    </pre>
+    <script src="../dist/iterateNode.min.js"></script>
+    <script>
+        var parseJsObject = document.getElementById("parseJs");
+        function action(type){
+            switch(type){
+                case "anlyzJson":
+                    var myJSONObject = {"apiVersion":"2.0",
+                        "data":{
+                            "updated":"2010-01-07T19:58:42.949Z",
+                            "totalItems":800,
+                            "startIndex":1,
+                            "itemsPerPage":1,
+                            "items":[
+                                {"id":"hYB0mn5zh2c",
+                                    "uploaded":"2007-06-05T22:07:03.000Z",
+                                    "updated":"2010-01-07T13:26:50.000Z",
+                                    "uploader":"GoogleDeveloperDay",
+                                    "category":"News",
+                                    "title":"Google Developers Day US - Maps API Introduction",
+                                    "description":"Google Maps API Introduction ...",
+                                    "tags":[
+                                        "GDD07","GDD07US","Maps"
+                                    ],
+                                    "thumbnail":{
+                                        "default":"http://i.ytimg.com/vi/hYB0mn5zh2c/default.jpg",
+                                        "hqDefault":"http://i.ytimg.com/vi/hYB0mn5zh2c/hqdefault.jpg"
+                                    },
+                                    "player":{
+                                        "default":"http://www.youtube.com/watch?vu003dhYB0mn5zh2c"
+                                    },
+                                    "content":{
+                                        "1":"rtsp://v5.cache3.c.youtube.com/CiILENy.../0/0/0/video.3gp",
+                                        "5":"http://www.youtube.com/v/hYB0mn5zh2c?f...",
+                                        "6":"rtsp://v1.cache1.c.youtube.com/CiILENy.../0/0/0/video.3gp"
+                                    },
+                                    "duration":2840,
+                                    "aspectRatio":"widescreen",
+                                    "rating":4.63,
+                                    "ratingCount":68,
+                                    "viewCount":220101,
+                                    "favoriteCount":201,
+                                    "commentCount":22,
+                                    "status":{
+                                        "value":"restricted",
+                                        "reason":"limitedSyndication"
+                                    },
+                                    "accessControl":{
+                                        "syndicate":"allowed",
+                                        "commentVote":"allowed",
+                                        "rate":"allowed",
+                                        "list":"allowed",
+                                        "comment":"allowed",
+                                        "embed":"allowed",
+                                        "videoRespond":"moderated"
+                                    }
+                                }
+                            ]
+                        }
+                    };
+                    var parseJs = iterateNode(myJSONObject);
+                    parseJsObject.innerHTML = "";
+                    parseJsObject.appendChild(parseJs);
+                    break;
+                case "anlyzDocument":
+                    var parseJs = iterateNode(document);
+                    parseJsObject.innerHTML = "";
+                    parseJsObject.appendChild(parseJs);
+                    break;
+                case "imadiv":
+                    var parseJs = iterateNode(document.getElementById("imadiv"));
+                    parseJsObject.innerHTML = "";
+                    parseJsObject.appendChild(parseJs);
+                default:
+                    break;
+            }
+
+        }
+    </script>
+</body>
+</html>
