@@ -2,7 +2,7 @@
   "name": "iterateNode",
   "description": "iterateNode node package",
   "version": "0.0.1",
-  "repository": "git://github.com/foo/bar.git",
+  "repository": "https://github.com/SimonSavage/iterateNode",
   "files": [
     "dist/iterateNode.css",
     "dist/iterateNode.js"
