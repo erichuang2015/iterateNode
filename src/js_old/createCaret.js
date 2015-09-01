@@ -1,9 +1,3 @@
-/**
- *
- * @param li {HTMLLIElement} - li element to attach the listener
- * @param settings {jsObject} - javascript object ( usually the settings passing to iterateNode constructor )
- * @returns {HTMLAnchorElement}
- */
 function createCaret(li,jsObject,countObj,stringModel,filterFunction){
     var caretA = document.createElement("a");
     caretA.href="javascript:void()";

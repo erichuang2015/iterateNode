@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IterateNode Example</title>
+    <link href="../dist/iterateNode.min.css" rel="stylesheet" />
+</head>
+<body>
+
+    <button onclick="action('anlyzJson')">Analyze Json</button>
+    <button onclick="action('anlyzDocument')">Analyze documentElement</button>
+    <button onclick="action('imadiv')">Analyze imadiv</button>
+    <label>
+        <span>Load a file:</span>
+        <input type="file" id="inputFiles">
+    </label>
+    <div id="imadiv">
+        imadiv
+        <p>
+            <b>imadiv<span>imadiv</span></b>
+        </p>
+    </div>
+    <pre id="parseJs">
+
+    </pre>
+    <script src="../dist/iterateNode.min.js"></script>
+    <script>
+        var parseJsObject = document.getElementById("parseJs");
+        function action(type){
+            switch(type){
+                case "anlyzJson":
+                    var xmlhttp = new XMLHttpRequest();
+                    xmlhttp.onreadystatechange = function() {
+                        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                            var myJSONObject = JSON.parse(xmlhttp.responseText);
+                            var parseJs = iterateNode(myJSONObject);
+                            parseJsObject.innerHTML = "";
+                            parseJsObject.appendChild(parseJs);
+                        }
+                    }
+                    xmlhttp.open("GET", "./JSON/example.json", true);
+                    try {
+                        xmlhttp.send();
+                    }
+                    catch(e){
+                        alert("there seems to be a problem in REST connection ( maybe this page is not served by a Server? ) " +
+                        "Try to load a file instead.")
+                    }
+                    break;
+                case "anlyzDocument":
+                    var parseJs = iterateNode(document);
+                    parseJsObject.innerHTML = "";
+                    parseJsObject.appendChild(parseJs);
+                    break;
+                case "imadiv":
+                    var parseJs = iterateNode(document.getElementById("imadiv"));
+                    parseJsObject.innerHTML = "";
+                    parseJsObject.appendChild(parseJs);
+                default:
+                    break;
+            }
+        }
+        var inputElement = document.getElementById("inputFiles");
+        inputElement.addEventListener("change", handleFiles, false);
+        function handleFiles() {
+            var fileList = this.files; /* now you can work with the file list */
+            var reader = new FileReader();
+            reader.onload = function(res){
+                console.log(res);
+                try{
+                    var json = JSON.parse(res.target.result);
+                    var parseJs = iterateNode(json);
+                    parseJsObject.innerHTML = "";
+                    parseJsObject.appendChild(parseJs);
+                }
+                catch(e){
+                    alert("The file selected doesn't not appear to be a JSON")
+                }
+            };
+            reader.readAsText(fileList[0]);
+        }
+    </script>
+</body>
+</html>

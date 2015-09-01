@@ -30,7 +30,12 @@ module.exports = function(grunt) {
         },
         cssmin: {
             options: {
-                sourceMap: true
+                sourceMap: true,
+                aggressiveMerging : false,
+                advanced : false,
+                roundingPrecision : -1,
+                shorthandCompacting: false,
+                keepSpecialComments: '*'
             },
             target: {
                 files: {
@@ -47,7 +52,5 @@ module.exports = function(grunt) {
 
     // Default task(s).
     grunt.registerTask('default', ["concat","uglify","cssmin"]);
-    //grunt.registerTask('all', ["concat","uglify"]);
-    //grunt.registerTask('concat', ["concat"]);
 
 };
