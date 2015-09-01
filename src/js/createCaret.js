@@ -4,7 +4,7 @@
  * @param settings {jsObject} - javascript object ( usually the settings passing to iterateNode constructor )
  * @returns {HTMLAnchorElement}
  */
-function createCaret(li,jsObject,countObj,stringModel,filterFunction){
+function createCaret(li,nodeIteratorSettings){
     var caretA = document.createElement("a");
     caretA.href="javascript:void()";
     caretA.className="caretA";
@@ -16,17 +16,18 @@ function createCaret(li,jsObject,countObj,stringModel,filterFunction){
         var ulChild = li.querySelectorAll("ul")[0];
         if ( !ulChild )
         {
-            var newId = countObj+"-";
-            if ( filterFunction ){
-                var newjsObject = filterFunction(li.getAttribute("data-string-model"),
+            nodeIteratorSettings.countObj =  nodeIteratorSettings.countObj+"-";
+            if ( nodeIteratorSettings.filterFunction ){
+                nodeIteratorSettings.filterFunction(li.getAttribute("data-string-model"),
                     function(newObject){
-                        li.appendChild( iterateNode(newObject, filterFunction,newId,stringModel) );
+                        nodeIteratorSettings.obj = newObject;
+                        li.appendChild( iterateNode(nodeIteratorSettings) );
                     }
                 );
-
             }
-            else
-                li.appendChild( iterateNode(jsObject, filterFunction,newId,stringModel) );
+            else{
+                li.appendChild( iterateNode(nodeIteratorSettings) );
+            }
         }
 
         var path = /open/g;

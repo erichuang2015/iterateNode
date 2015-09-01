@@ -25,6 +25,7 @@
     <script src="../src/js/createCaret.js"></script>
     <script src="../src/js/iterateNode-documentFragment.js"></script>
     <script src="../src/js/sanitize.js"></script>
+    <script src="../src/js/merge.js"></script>
     <script>
         var parseJsObject = document.getElementById("parseJs");
         function action(type){
@@ -53,6 +54,7 @@
                 case "anlyzDocument":
                     var iterateNodeSettings = {};
                     iterateNodeSettings.obj = document;
+                    iterateNodeSettings.Include = ["childNodes","children","innerText","parent","NodeList","html","body","HTMLCollection"];
                     var parseJs = iterateNode(iterateNodeSettings);
                     parseJsObject.innerHTML = "";
                     parseJsObject.appendChild(parseJs);
