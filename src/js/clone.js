@@ -4,7 +4,12 @@
 function clone(obj) {
     var target = {};
     for (var i in obj) {
-        target[i] = obj[i];
+        var typeNode = Object.prototype.toString.call(obj[k]);
+        if ( ( typeNode == "[object Object]" || typeNode == "[object Array]" ) &&
+            obj[i] )
+            target[i] = clone(obj)
+        else
+            target[i] = obj[i];
     }
     return target;
 }

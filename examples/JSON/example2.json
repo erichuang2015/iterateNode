@@ -1,0 +1,19 @@
+{
+    "array": [
+        1,
+        2,
+        3
+    ],
+    "boolean": true,
+    "bramo": 12,
+    "null": [],
+    "number": 123,
+    "object": {
+        "a": "b",
+        "c": "d",
+        "e": "f"
+    },
+    "string": "Hello World",
+    "poy": "function(){ }",
+    "null2": null
+}

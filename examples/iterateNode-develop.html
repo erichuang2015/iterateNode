@@ -30,6 +30,7 @@
 
     </pre>
     <script src="../src/js/createCaret.js"></script>
+    <script src="../src/js/parsingNode.js"></script>
     <script src="../src/js/iterateNode-documentFragment.js"></script>
     <script src="../src/js/sanitize.js"></script>
     <script src="../src/js/merge.js"></script>
@@ -45,7 +46,7 @@
                             var myJSONObject = JSON.parse(xmlhttp.responseText);
                             var iterateNodeSettings = {};
                             iterateNodeSettings.obj = myJSONObject;
-                            iterateNodeSettings.Exclude = ["content"];
+                            iterateNodeSettings.flatArrays = true;
                             var parseJs = iterateNode(iterateNodeSettings);
                             parseJsObject.innerHTML = "";
                             parseJsObject.appendChild(parseJs);
@@ -69,45 +70,36 @@
                     parseJsObject.appendChild(parseJs);
                     break;
                 case "anlyzDocumentFiltered":
-                    var objFilterFunction = function(obj){
-                        var target = Array.isArray(obj) ? [] : {};
-                        if ( Array.isArray(obj) ){
-                            for(var i = 0;i<obj.length;i++) {
-                                target.push(obj[i]);
-                            }
-                        }
-                        if(typeof obj === "string")
-                            target.innerText = obj;
-                        else
-                            target[obj.tagName] = obj;
-                        return target;
-                    };
-                    var elementFilterFunction = function(property,obj){
+                    var filterFunction = function(obj){
                         var target = {};
-                        if (property.tagName && Array.isArray(obj)) {
-                            target[property.tagName] = property;
+                        var DOMtype = obj.tagName || obj.nodeName;
+                        var text = obj.nodeValue;
+                        var typeNode = Object.prototype.toString.call(obj);
+                        if ( typeNode == "[object NodeList]" && !text )
+                        {
+                            target = [];
+                            for(var k = 0; k < obj.length; k++)
+                            {
+                                if( !obj[k].nodeValue || obj[k].nodeValue.trim() )
+                                    target.push(obj[k]);
+                            }
                             return target;
                         }
-                        else
-                            return property
-                    };
-                    var asyncFunction = function(obj,dataJSON,callback){
-                        var target = [];
-                        if( obj.children.length )
-                            for(var i = 0; i<obj.children.length; i++){
-                                target.push(obj.children[i]);
-                            }
-                        else if(obj.innerText)
-                            target = obj.innerText;
-                        else
-                            target = "";
-                        callback(target);
+                        if ( array.isArray(obj) ){
+
+                        }
+                        if ( text ){
+                            return{ innerText : JSON.stringify(text) }
+                        }
+                        target[DOMtype] = obj.childNodes;
+                        return target;
                     };
                     var iterateNodeSettings = {};
                     iterateNodeSettings.obj = document.body;
-                    iterateNodeSettings.objFilterFunction = objFilterFunction;
-                    iterateNodeSettings.elementFilterFunction = elementFilterFunction;
-                    iterateNodeSettings.asyncFunction = asyncFunction;
+                    iterateNodeSettings.filterFunction = filterFunction;
+                    iterateNodeSettings.flatArrays = function(obj){
+                        return obj.childNodes;
+                    };
                     var parseJs = iterateNode(iterateNodeSettings);
                     parseJsObject.innerHTML = "";
                     parseJsObject.appendChild(parseJs);
@@ -131,7 +123,7 @@
                 try{
                     var json = JSON.parse(res.target.result);
                     var iterateNodeSettings = {};
-                    iterateNodeSettings.obj = document.getElementById("imadiv");
+                    iterateNodeSettings.obj = json;
                     var parseJs = iterateNode(iterateNodeSettings);
                     parseJsObject.innerHTML = "";
                     parseJsObject.appendChild(parseJs);
