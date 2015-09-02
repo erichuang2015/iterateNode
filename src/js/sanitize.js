@@ -2,8 +2,10 @@
  * Created by Simone on 26/07/15.
  */
 var sanitize = function(html){
-    var newHTML = html.replace(/</g,"&lt")
-    .replace(/>/g,"&gt")
-    .replace(/&/g,"&amp");
-    return newHTML;
+    return html
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 };

@@ -17,8 +17,8 @@ function createCaret(li,nodeIteratorSettings){
         if ( !ulChild )
         {
             nodeIteratorSettings.countObj =  nodeIteratorSettings.countObj+"-";
-            if ( nodeIteratorSettings.filterFunction ){
-                nodeIteratorSettings.filterFunction(li.getAttribute("data-string-model"),
+            if ( nodeIteratorSettings.asyncFunction ){
+                nodeIteratorSettings.asyncFunction(nodeIteratorSettings.obj,li.getAttribute("data-string-model"),
                     function(newObject){
                         nodeIteratorSettings.obj = newObject;
                         li.appendChild( iterateNode(nodeIteratorSettings) );

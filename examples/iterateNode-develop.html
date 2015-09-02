@@ -3,11 +3,18 @@
 <head>
     <title>IterateNode Example</title>
     <link href="../src/css/iterateNode.css" rel="stylesheet" />
+    <style>
+        body{
+            font-size:16px;
+            overflow-x:hidden;
+        }
+    </style>
 </head>
 <body>
 
     <button onclick="action('anlyzJson')">Analyze Json</button>
     <button onclick="action('anlyzDocument')">Analyze documentElement</button>
+    <button onclick="action('anlyzDocumentFiltered')">Analyze document body - Filtered</button>
     <button onclick="action('imadiv')">Analyze imadiv</button>
     <label>
         <span>Load a file:</span>
@@ -26,6 +33,7 @@
     <script src="../src/js/iterateNode-documentFragment.js"></script>
     <script src="../src/js/sanitize.js"></script>
     <script src="../src/js/merge.js"></script>
+    <script src="../src/js/assignParamFromString.js"></script>
     <script>
         var parseJsObject = document.getElementById("parseJs");
         function action(type){
@@ -37,11 +45,12 @@
                             var myJSONObject = JSON.parse(xmlhttp.responseText);
                             var iterateNodeSettings = {};
                             iterateNodeSettings.obj = myJSONObject;
+                            iterateNodeSettings.Exclude = ["content"];
                             var parseJs = iterateNode(iterateNodeSettings);
                             parseJsObject.innerHTML = "";
                             parseJsObject.appendChild(parseJs);
                         }
-                    }
+                    };
                     xmlhttp.open("GET", "./JSON/example.json", true);
                     try {
                         xmlhttp.send();
@@ -54,7 +63,51 @@
                 case "anlyzDocument":
                     var iterateNodeSettings = {};
                     iterateNodeSettings.obj = document;
-                    iterateNodeSettings.Include = ["childNodes","children","innerText","parent","NodeList","html","body","HTMLCollection"];
+                    //iterateNodeSettings.Include = ["childNodes","children","innerText","parent","NodeList","html","body","HTMLCollection","tagName"];
+                    var parseJs = iterateNode(iterateNodeSettings);
+                    parseJsObject.innerHTML = "";
+                    parseJsObject.appendChild(parseJs);
+                    break;
+                case "anlyzDocumentFiltered":
+                    var objFilterFunction = function(obj){
+                        var target = Array.isArray(obj) ? [] : {};
+                        if ( Array.isArray(obj) ){
+                            for(var i = 0;i<obj.length;i++) {
+                                target.push(obj[i]);
+                            }
+                        }
+                        if(typeof obj === "string")
+                            target.innerText = obj;
+                        else
+                            target[obj.tagName] = obj;
+                        return target;
+                    };
+                    var elementFilterFunction = function(property,obj){
+                        var target = {};
+                        if (property.tagName && Array.isArray(obj)) {
+                            target[property.tagName] = property;
+                            return target;
+                        }
+                        else
+                            return property
+                    };
+                    var asyncFunction = function(obj,dataJSON,callback){
+                        var target = [];
+                        if( obj.children.length )
+                            for(var i = 0; i<obj.children.length; i++){
+                                target.push(obj.children[i]);
+                            }
+                        else if(obj.innerText)
+                            target = obj.innerText;
+                        else
+                            target = "";
+                        callback(target);
+                    };
+                    var iterateNodeSettings = {};
+                    iterateNodeSettings.obj = document.body;
+                    iterateNodeSettings.objFilterFunction = objFilterFunction;
+                    iterateNodeSettings.elementFilterFunction = elementFilterFunction;
+                    iterateNodeSettings.asyncFunction = asyncFunction;
                     var parseJs = iterateNode(iterateNodeSettings);
                     parseJsObject.innerHTML = "";
                     parseJsObject.appendChild(parseJs);
