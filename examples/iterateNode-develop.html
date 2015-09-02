@@ -120,17 +120,17 @@
             var fileList = this.files;
             var reader = new FileReader();
             reader.onload = function(res){
-                try{
+                //try{
                     var json = JSON.parse(res.target.result);
                     var iterateNodeSettings = {};
                     iterateNodeSettings.obj = json;
                     var parseJs = iterateNode(iterateNodeSettings);
                     parseJsObject.innerHTML = "";
                     parseJsObject.appendChild(parseJs);
-                }
+                /*}
                 catch(e){
                     alert("The file selected doesn't not appear to be a JSON")
-                }
+                }*/
             };
             reader.readAsText(fileList[0]);
         }

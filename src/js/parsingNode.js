@@ -26,7 +26,7 @@ function parsingNode(k,node,options,count){
         li.appendChild(caretA);
     }
     else if ( options.sanitizedObjects.indexOf(k) < 0 ) // all javascript values except sanitizedObjects array values
-        li.innerHTML += node[k] ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +"</span><b class='iterateNode-sanitize-value'>" + node[k] + "</b>" : " null";
+        li.innerHTML += node ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +"</span><b class='iterateNode-sanitize-value'>" + node + "</b>" : " null";
     else if ( options.sanitizedObjects.indexOf(k) > -1 ) {// sanitizedObjects
         var sanitizedHTML = sanitize( node );
         li.innerHTML += "<pre class='iterateNode-sanitizedHTML'>" + sanitizedHTML + "</pre>";
