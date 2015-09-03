@@ -107,6 +107,11 @@
                         var DOMtype = obj.tagName;
                         var attributes = "";
                         var returnString = "";
+
+                        if ( obj.attributes )
+                            for(var i = 0; i<obj.attributes.length;i++)
+                                attributes += " " + obj.attributes[i].nodeName + "=&quot;" + obj.attributes[i].nodeValue + "&quot;";
+
                         if ( !DOMtype ){
                             if ( obj.nodeName == "#comment" )
                                 returnString = "&lt;!--" + obj.nodeValue + "--&gt;";
@@ -118,10 +123,6 @@
                         }
                         else
                             returnString = "&lt;" + DOMtype + attributes + "&gt;";
-                        if ( obj.attributes )
-                            for(var i = 0; i<obj.attributes.length;i++)
-                                attributes += " " + obj.attributes[i].nodeName + "=&quot;" + obj.attributes[i].nodeValue + "&quot;";
-
 
                         var returnValue = {
                             typeofValue : returnString,

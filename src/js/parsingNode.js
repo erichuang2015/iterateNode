@@ -22,7 +22,11 @@ function parsingNode(k,node,options,count){
         "<span class='iterateNode-sanitize-key-typeof'>" + options.Typeof + "</span>" +
         "<i class='iterateNode-sanitize-key-typeof-value'>"+ typeOfValue + "</i></span>";
 
-    if( typeof node === "object" && node ) // all javascript objects
+    if ( options.sanitizedObjects.indexOf(k) > -1 ) {// sanitizedObjects
+        var sanitizedHTML = sanitize( node );
+        li.innerHTML += "<pre class='iterateNode-sanitizedHTML'>" + sanitizedHTML + "</pre>";
+    }
+    else if( typeof node === "object" && node ) // all javascript objects
     {
         if (( ( typeNode == "[object Object]" || typeNode == "[object Array]" ) && !Object.keys(node).length ) )
             return li;
@@ -37,9 +41,6 @@ function parsingNode(k,node,options,count){
     }
     else if ( options.sanitizedObjects.indexOf(k) < 0 ) // all javascript values except sanitizedObjects array values
         li.innerHTML += node ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +"</span><b class='iterateNode-sanitize-value'>" + node + "</b>" : " null";
-    else if ( options.sanitizedObjects.indexOf(k) > -1 ) {// sanitizedObjects
-        var sanitizedHTML = sanitize( node );
-        li.innerHTML += "<pre class='iterateNode-sanitizedHTML'>" + sanitizedHTML + "</pre>";
-    }
+
     return li;
 }
