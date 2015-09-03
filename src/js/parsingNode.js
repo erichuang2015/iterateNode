@@ -3,20 +3,24 @@
  */
 function parsingNode(k,node,options,count){
     var typeNode = Object.prototype.toString.call(node);
+    var typeOfValue = options.typeOfFilter ? options.typeOfFilter(typeNode,node) : typeNode;
     var newStringModel = !options.stringModel.length ? k : options.stringModel + "?" + k;
     var newCountObject = options.countObj + count;
     var isInnerText = options.sanitizedObjects.indexOf(k) > -1 ? "node-iterator-text-content" : "";
     var li = document.createElement("li");
     li.id="iterateNode-object-" + newCountObject;
     li.setAttribute("data-string-model", newStringModel);
-    li.className="iterateNode-object";
+    li.className="iterateNode-object-" + typeNode.replace(/[\[\]]/g, "").replace(/\s+/,"-");
     li.innerHTML = "<span class='" + isInnerText +"'><i class='iterateNode-sanitize-key'>" + options.key + "</i><b class='iterateNode-sanitize-key-value'>"+ k +
         "</b><span class='iterateNode-sanitize-separator1'>" + options.Separator1 + "</span>" +
         "<span class='iterateNode-sanitize-key-typeof'>" + options.Typeof + "</span>" +
-        "<i class='iterateNode-sanitize-key-typeof-value'>"+ typeNode + "</i></span>";
+        "<i class='iterateNode-sanitize-key-typeof-value'>"+ typeOfValue + "</i></span>";
 
     if( typeof node === "object" && node ) // all javascript objects
     {
+        if (( ( typeNode == "[object Object]" || typeNode == "[object Array]" ) && !Object.keys(node).length ) )
+            return li;
+
         var settingsChildren = merge({
             obj:node,
             stringModel:newStringModel,

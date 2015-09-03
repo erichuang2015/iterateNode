@@ -12,7 +12,7 @@
  * @property Separator2 {String} - Optional. text on element .iterateNode-sanitize-separator2. Default ' -- '
  * @property countObj {String} - Optional. the id of the list element after 'iterateNode-object-'. Default is ""
  * @property stringModel {String} - Optional. the json string model inserted in the "data-string-model" attribute of the element. Default is builded under the hood.
- * @property stringModel {String} - Optional. the json string model inserted in the "data-string-model" attribute of the element. Default is builded under the hood.
+ * @property typeOfFilter {function} - Optional. The value instead of the stringified constructor ( passed as argument )
  * @returns {documentFragment} - See {@link https://developer.mozilla.org/it/docs/Web/API/DocumentFragment}
  */
 
@@ -31,7 +31,7 @@ var defaults = {
         "innerHTML",
         "outerHTML"
     ]
-}
+};
 //var iterateNode = function(jsObject,filterFunction, countObj,stringModel){
 var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();

@@ -15,5 +15,6 @@
     },
     "string": "Hello World",
     "poy": "function(){ }",
-    "null2": null
+    "null2": null,
+    "arrayNull" : []
 }
