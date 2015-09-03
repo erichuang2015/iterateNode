@@ -8,6 +8,10 @@
             font-size:16px;
             overflow-x:hidden;
         }
+        * {
+            word-break: break-all;
+            word-wrap: break-word;
+        }
     </style>
     <!-- some comments
     and comments...
@@ -81,8 +85,6 @@
                         var typeNode = Object.prototype.toString.call(obj);
                         var iterateChildNodes = function(childNode){
                             target = [];
-                            if ( !childNode.length )
-                                return {};
 
                             for(var k = 0; k < childNode.length; k++)
                             {
