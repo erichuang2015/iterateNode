@@ -3,7 +3,13 @@
  */
 function parsingNode(k,node,options,count){
     var typeNode = Object.prototype.toString.call(node);
-    var typeOfValue = options.typeOfFilter ? options.typeOfFilter(typeNode,node) : typeNode;
+    var typeOfValue = typeNode;
+    if ( options.typeOfFilter ){
+        var newValues = options.typeOfFilter(typeNode,node);
+        typeOfValue = newValues.typeofValue;
+        node = newValues.node;
+        typeNode = Object.prototype.toString.call(node);
+    }
     var newStringModel = !options.stringModel.length ? k : options.stringModel + "?" + k;
     var newCountObject = options.countObj + count;
     var isInnerText = options.sanitizedObjects.indexOf(k) > -1 ? "node-iterator-text-content" : "";

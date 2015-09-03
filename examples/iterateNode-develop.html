@@ -104,14 +104,30 @@
                         return iterateChildNodes(obj.childNodes);
                     };
                     var typeOfFilter = function(str,obj){
-                        var DOMtype = obj.tagName || obj.nodeName;
+                        var DOMtype = obj.tagName;
                         var attributes = "";
+                        var returnString = "";
+                        if ( !DOMtype ){
+                            if ( obj.nodeName == "#comment" )
+                                returnString = "&lt;!--" + obj.nodeValue + "--&gt;";
+
+                            if ( obj.nodeName == "#text" )
+                                returnString = "&quot;" + obj.nodeValue + "&quot;";
+
+                            obj = {};
+                        }
+                        else
+                            returnString = "&lt;" + DOMtype + attributes + "&gt;";
                         if ( obj.attributes )
                             for(var i = 0; i<obj.attributes.length;i++)
                                 attributes += " " + obj.attributes[i].nodeName + "=&quot;" + obj.attributes[i].nodeValue + "&quot;";
 
-                        var returnString = "&lt;" + DOMtype + attributes + "&gt;";
-                        return returnString;
+
+                        var returnValue = {
+                            typeofValue : returnString,
+                            node : obj
+                        };
+                        return returnValue;
                     };
                     var iterateNodeSettings = {};
                     iterateNodeSettings.obj = document.documentElement;
