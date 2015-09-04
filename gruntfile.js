@@ -7,8 +7,8 @@ module.exports = function(grunt) {
         uglify: {
             options: {
                 banner: "/* <%= pkg.name %><%= pkg.version %> <%= grunt.template.today('yyyy-mm-dd') %> */\n",
-                sourceMap: true //,
-                //sourceMapName: "dist/<%= pkg.name %>.map"
+                sourceMap: true,
+                sourceMapName: "dist/<%= pkg.name %>.map"
             },
             js: {
                 src: "dist/<%= pkg.name %>.js",
