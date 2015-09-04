@@ -213,7 +213,7 @@ function parsingNode(k,node,options,count){
     else if( typeof node === "object" && node ) // all javascript objects
     {
         if ( ( ( typeNode == "[object Object]" || typeNode == "[object Array]" ) && !Object.keys(node).length ) &&
-            !nodeIteratorSettings.asyncFunction)
+            !options.asyncFunction)
             return li;
 
         var settingsChildren = merge({
