@@ -55,6 +55,7 @@
                             var myJSONObject = JSON.parse(xmlhttp.responseText);
                             var iterateNodeSettings = {};
                             iterateNodeSettings.obj = myJSONObject;
+                            iterateNodeSettings.name = "myJSONObject";
                             iterateNodeSettings.flatArrays = true;
                             var parseJs = iterateNode(iterateNodeSettings);
                             parseJsObject.innerHTML = "";
@@ -117,12 +118,18 @@
                                 returnString = "&lt;!--" + obj.nodeValue + "--&gt;";
 
                             if ( obj.nodeName == "#text" )
-                                returnString = "&quot;" + obj.nodeValue + "&quot;";
+                                returnString = obj.nodeValue;
 
-                            obj = {};
+                            // obj = {};
                         }
                         else
                             returnString = "&lt;" + DOMtype + attributes + "&gt;";
+
+                        if ( !obj.childNodes.length ) {
+                            obj = returnString;
+                            returnString = str;
+                            //obj = {};
+                        }
 
                         var returnValue = {
                             typeofValue : returnString,

@@ -37,6 +37,10 @@ var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();
     var ul = document.createElement("ul");
     ul.className="iterateNode-obj";
+    if( settings.name ){
+        ul.id = settings.name;
+        settings.name = null;
+    }
     var typeNode = "";
     var count = 0;
     var alias = settings.filterFunction ? settings.filterFunction(settings.obj) : settings.obj;
