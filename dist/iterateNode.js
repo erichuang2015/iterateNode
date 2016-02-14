@@ -138,6 +138,10 @@ var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();
     var ul = document.createElement("ul");
     ul.className="iterateNode-obj";
+    if( settings.name ){
+        ul.id = settings.name;
+        settings.name = null;
+    }
     var typeNode = "";
     var count = 0;
     var alias = settings.filterFunction ? settings.filterFunction(settings.obj) : settings.obj;
@@ -198,9 +202,9 @@ function parsingNode(k,node,options,count){
     var newCountObject = options.countObj + count;
     var isInnerText = options.sanitizedObjects.indexOf(k) > -1 ? "node-iterator-text-content" : "";
     var li = document.createElement("li");
-    li.id="iterateNode-object-" + newCountObject;
+    li.id="iterateNode-" + newCountObject;
     li.setAttribute("data-string-model", newStringModel);
-    li.className="iterateNode-object-" + typeNode.replace(/[\[\]]/g, "").replace(/\s+/,"-");
+    li.className="iterateNode-" + typeNode.replace(/[\[\]]/g, "").replace(/\s+/,"-");
     li.innerHTML = "<span class='" + isInnerText +"'><i class='iterateNode-sanitize-key'>" + options.key + "</i><b class='iterateNode-sanitize-key-value'>"+ k +
         "</b><span class='iterateNode-sanitize-separator1'>" + options.Separator1 + "</span>" +
         "<span class='iterateNode-sanitize-key-typeof'>" + options.Typeof + "</span>" +
