@@ -32,7 +32,6 @@ var defaults = {
         "outerHTML"
     ]
 };
-//var iterateNode = function(jsObject,filterFunction, countObj,stringModel){
 var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();
     var ul = document.createElement("ul");
@@ -46,17 +45,12 @@ var iterateNode = function(settings){
     var alias = settings.filterFunction ? settings.filterFunction(settings.obj) : settings.obj;
     var flatArrays = settings.flatArrays;
     var options = merge(settings,defaults,true);
-    /*if( flatArrays && Array.isArray(alias) )
-        for(count = 0;i<alias.length;count++){
-            for(var inner = 0;inner<alias[count].length;inner++)
-                ul.appendChild( parsingNode(inner,alias[count][inner],options,count) );
-        }
-    else*/
-        for(var k in alias){
-            var li = parsingNode(k,alias[k],options,count);
-            ul.appendChild(li);
-            count++;
-        }
+
+    for(var k in alias){
+        var li = parsingNode(k,alias[k],options,count);
+        ul.appendChild(li);
+        count++;
+    }
 
 
     docfrag.appendChild(ul);
