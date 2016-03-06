@@ -23,22 +23,15 @@ function parsingNode(k,node,options,count){
         "</i><b class='iterateNode-sanitize-key-value'" + contentEditable + ">"+ k +
         "</b><span class='iterateNode-sanitize-separator1'>" + options.Separator1 + "</span>" +
         "<span class='iterateNode-sanitize-key-typeof'>" + options.Typeof + "</span>" +
-        "<i class='iterateNode-sanitize-key-typeof-value' data-value='" + typeOfValue +"'>"+ typeOfValue + "</i>"+
+        "<span class='iterateNode-data-types-typeof'>" +
+            "<select class='iterateNode-data-types hide'></select>" +
+            "<i class='iterateNode-sanitize-key-typeof-value show' data-value='" + typeOfValue +"'>"+ typeOfValue + "</i>"+
+        "</span>" +
         "</span>";
 
-    if( options.contentEditable && contentEditableList ){ // adding contentEditable events
-        li.insertAdjacentHTML('beforeend',contentEditableList);
-        addItems = li.querySelector('.add-items')
-        addItems.addEventListener('click', function (e) {
-            if ( !li.querySelector('ul') )
-                li.insertAdjacentHTML('beforeend','<ul></ul>');
 
-            var NodeNewElement = li.querySelector('ul');
-            var thisLength = NodeNewElement.children.length;
-            var thisKey = typeNode == "[object Object]" ? "key" + thisLength : thisLength;
-            var newLi = parsingNode(thisKey, "value", options, count);
-            NodeNewElement.appendChild(newLi);
-        })
+    if( options.contentEditable ){ // adding contentEditable events
+        iterNodeCntEdit(li,contentEditableList,node,typeNode,newStringModel,newCountObject,options);
     }
 
     if ( options.sanitizedObjects.indexOf(k) > -1 ) {// sanitizedObjects
@@ -60,9 +53,11 @@ function parsingNode(k,node,options,count){
         li.appendChild(caretA);
     }
     else if ( options.sanitizedObjects.indexOf(k) < 0 ) // all javascript values except sanitizedObjects array values
+        li.insertAdjacentHTML('beforeend',"<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +"</span>" +
+            "<b class='iterateNode-sanitize-value'" + contentEditable + ">" + node + "</b>");
+    /*
         li.innerHTML += node ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +
         "</span><b class='iterateNode-sanitize-value'" + contentEditable + ">" + node + "</b>" : " null";
-
-
+*/
     return li;
 }

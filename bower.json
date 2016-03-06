@@ -29,7 +29,7 @@
   },
   "gruntFiles" : {
     "js": {
-      "dist/iterateNode.js": "src/js/*"
+      "dist/iterateNode.js": ["src/js/*.js","src/js/defaults/default.js"]
     },
     "css":{
       "dist/iterateNode.css": "src/css/*"

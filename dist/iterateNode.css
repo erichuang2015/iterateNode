@@ -1,4 +1,5 @@
-*:not('input') {
+
+*:not(input) {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -52,7 +53,7 @@
     clear:both;
     overflow:auto;
     display: block;
-    padding: 9.5px;
+    padding: 9px;
     font-size: 13px;
     line-height: 1.42857143;
     color: #333;
@@ -62,6 +63,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
 }
+
 .iterateNode-obj .simpleHide{
     display:none;
 }
@@ -79,4 +81,12 @@
 }
 .iterateNode-obj .iterateNode-sanitize-separator1{
 
+}
+
+.hide{
+    display:none
+}
+
+.show{
+    display:block;
 }

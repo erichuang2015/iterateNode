@@ -42,6 +42,67 @@ function clone(obj) {
     return target;
 }
 
+var classHide = /hide/g;
+var classShow = /show/g;
+function iterNodeCntEdit(li,contentEditableList,node,typeNode,newStringModel,newCountObject,options){
+    var dataTyepOf = li.querySelector('.iterateNode-data-types-typeof');
+    var dtypeOf = li.querySelector('.iterateNode-sanitize-key-typeof-value');
+    var select = li.querySelector('.iterateNode-data-types');
+    if( contentEditableList.length ){
+        li.insertAdjacentHTML('beforeend',contentEditableList);
+        var addItems = li.querySelector('.add-items');
+        addItems.addEventListener('click', function (e) {
+            if( !li.querySelector('ul') && li.querySelector('.caretA') )
+                return false;
+
+            if ( !li.querySelector('.caretA')){
+                var settingsChildren = merge({
+                    obj:node,
+                    stringModel:newStringModel,
+                    countObj:newCountObject,
+                    opened:true
+                },options,true);
+                var caretA = createCaret(li,settingsChildren);
+                li.appendChild(caretA);
+                li.insertAdjacentHTML('beforeend','<ul></ul>');
+            }
+
+            var NodeNewElement = li.querySelector('ul');
+            var thisLength = NodeNewElement.children.length;
+            var thisKey = typeNode == "[object Object]" ? "key" + thisLength : thisLength;
+            var newLi = parsingNode(thisKey, "value", options, count);
+            NodeNewElement.appendChild(newLi);
+        });
+    }
+
+    for(var i = 0; i<options.iterateNodeDataTypes.length;i++){
+        var option = document.createElement("option");
+        option.value = iterateNodeDataTypes[i].value;
+        option.text = iterateNodeDataTypes[i].label;
+        select.add(option, i);
+    }
+
+    var path = /show/g;
+    dataTyepOf.addEventListener('click', function (e) {
+        if ( path.test( dtypeOf.className ) )
+        {
+            dtypeOf.className = dtypeOf.className.replace(path, "") + " hide";
+            select.className =select.className.replace(/hide/g, "") + " show";
+        }
+        /*
+        else{
+            select.className = select.className.replace(path, "") + " hide";
+            dtypeOf.className = dtypeOf.className.replace(/hide/g, "") + " show";
+        }*/
+
+    });
+    select.addEventListener('blur', function(e){
+        dtypeOf.textContent = select.value;
+        select.className = select.className.replace(path, "") + " hide";
+        dtypeOf.className = dtypeOf.className.replace(/hide/g, "") + " show";
+    });
+
+}
 /**
  *
  * @param li {HTMLLIElement} - li element to attach the listener
@@ -53,7 +114,8 @@ function createCaret(li,nodeIteratorSettings){
     caretA.href="javascript:void()";
     caretA.className="caretA";
     var caret = document.createElement("span");
-    caret.className = "caret";
+    caret.className =  !nodeIteratorSettings.opened ? "caret" : "caret open";
+
     caretA.addEventListener("click",function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -89,6 +151,43 @@ function createCaret(li,nodeIteratorSettings){
     caretA.appendChild(caret);
     return caretA;
 }
+/*
+ JSON Value
+ It includes ?
+
+ number (integer or floating point)
+ string
+ boolean
+ array
+ object
+ null
+ */
+var iterateNodeDataTypes = [
+    {
+        value : "[object Number]",
+        label : "number"
+    },
+    {
+        value : "[object String]",
+        label : "string"
+    },
+    {
+        value : "[object Boolean]",
+        label : "boolean"
+    },
+    {
+        value : "[object Array]",
+        label : "list of values"
+    },
+    {
+        value : "[object Object]",
+        label : "list of elements"
+    },
+    {
+        value : "[object Null]",
+        label : "null"
+    }
+];
 function filterObject( obj, predicate ) {
     var target = Array.isArray(obj) ? [] : {};
     for (var i in obj) {
@@ -117,23 +216,6 @@ function filterObject( obj, predicate ) {
  * @returns {documentFragment} - See {@link https://developer.mozilla.org/it/docs/Web/API/DocumentFragment}
  */
 
-var defaults = {
-    countObj : "",
-    stringModel : "",
-    key : "key:",
-    Separator1 : " -- ",
-    Typeof : "typeof:",
-    Separator2 : " -- ",
-    Include : [],
-    Exclude : [],
-    sanitizedObjects : [
-        "outerText",
-        "innerText",
-        "innerHTML",
-        "outerHTML"
-    ]
-};
-//var iterateNode = function(jsObject,filterFunction, countObj,stringModel){
 var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();
     var ul = document.createElement("ul");
@@ -147,17 +229,12 @@ var iterateNode = function(settings){
     var alias = settings.filterFunction ? settings.filterFunction(settings.obj) : settings.obj;
     var flatArrays = settings.flatArrays;
     var options = merge(settings,defaults,true);
-    /*if( flatArrays && Array.isArray(alias) )
-        for(count = 0;i<alias.length;count++){
-            for(var inner = 0;inner<alias[count].length;inner++)
-                ul.appendChild( parsingNode(inner,alias[count][inner],options,count) );
-        }
-    else*/
-        for(var k in alias){
-            var li = parsingNode(k,alias[k],options,count);
-            ul.appendChild(li);
-            count++;
-        }
+
+    for(var k in alias){
+        var li = parsingNode(k,alias[k],options,count);
+        ul.appendChild(li);
+        count++;
+    }
 
 
     docfrag.appendChild(ul);
@@ -201,14 +278,26 @@ function parsingNode(k,node,options,count){
     var newStringModel = !options.stringModel.length ? k : options.stringModel + "?" + k;
     var newCountObject = options.countObj + count;
     var isInnerText = options.sanitizedObjects.indexOf(k) > -1 ? "node-iterator-text-content" : "";
+    var contentEditable = options.contentEditable ? " contenteditable " : "";
+    var contentEditableList = options.contentEditable && ( typeNode == "[object Object]" || typeNode == "[object Array]" ) ? "<span class='add-items'>+</span>" : "";
     var li = document.createElement("li");
     li.id="iterateNode-" + newCountObject;
     li.setAttribute("data-string-model", newStringModel);
     li.className="iterateNode-" + typeNode.replace(/[\[\]]/g, "").replace(/\s+/,"-");
-    li.innerHTML = "<span class='" + isInnerText +"'><i class='iterateNode-sanitize-key'>" + options.key + "</i><b class='iterateNode-sanitize-key-value'>"+ k +
+    li.innerHTML = "<span class='" + isInnerText +"'><i class='iterateNode-sanitize-key'>" + options.key +
+        "</i><b class='iterateNode-sanitize-key-value'" + contentEditable + ">"+ k +
         "</b><span class='iterateNode-sanitize-separator1'>" + options.Separator1 + "</span>" +
         "<span class='iterateNode-sanitize-key-typeof'>" + options.Typeof + "</span>" +
-        "<i class='iterateNode-sanitize-key-typeof-value'>"+ typeOfValue + "</i></span>";
+        "<span class='iterateNode-data-types-typeof'>" +
+            "<select class='iterateNode-data-types hide'></select>" +
+            "<i class='iterateNode-sanitize-key-typeof-value show' data-value='" + typeOfValue +"'>"+ typeOfValue + "</i>"+
+        "</span>" +
+        "</span>";
+
+
+    if( options.contentEditable ){ // adding contentEditable events
+        iterNodeCntEdit(li,contentEditableList,node,typeNode,newStringModel,newCountObject,options);
+    }
 
     if ( options.sanitizedObjects.indexOf(k) > -1 ) {// sanitizedObjects
         var sanitizedHTML = sanitize( node );
@@ -229,8 +318,12 @@ function parsingNode(k,node,options,count){
         li.appendChild(caretA);
     }
     else if ( options.sanitizedObjects.indexOf(k) < 0 ) // all javascript values except sanitizedObjects array values
-        li.innerHTML += node ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +"</span><b class='iterateNode-sanitize-value'>" + node + "</b>" : " null";
-
+        li.insertAdjacentHTML('beforeend',"<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +"</span>" +
+            "<b class='iterateNode-sanitize-value'" + contentEditable + ">" + node + "</b>");
+    /*
+        li.innerHTML += node ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +
+        "</span><b class='iterateNode-sanitize-value'" + contentEditable + ">" + node + "</b>" : " null";
+*/
     return li;
 }
 /**
@@ -248,5 +341,23 @@ var sanitize = function(html){
         return html;
 };
 
+var defaults = {
+    countObj : "",
+    stringModel : "",
+    key : "key:",
+    Separator1 : " -- ",
+    Typeof : "typeof:",
+    Separator2 : " -- ",
+    Include : [],
+    Exclude : [],
+    sanitizedObjects : [
+        "outerText",
+        "innerText",
+        "innerHTML",
+        "outerHTML"
+    ],
+    iterateNodeDataTypes : iterateNodeDataTypes,
+    asyncFunction : false
+};
 window.iterateNode = iterateNode;
 })();

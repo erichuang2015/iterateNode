@@ -16,22 +16,6 @@
  * @returns {documentFragment} - See {@link https://developer.mozilla.org/it/docs/Web/API/DocumentFragment}
  */
 
-var defaults = {
-    countObj : "",
-    stringModel : "",
-    key : "key:",
-    Separator1 : " -- ",
-    Typeof : "typeof:",
-    Separator2 : " -- ",
-    Include : [],
-    Exclude : [],
-    sanitizedObjects : [
-        "outerText",
-        "innerText",
-        "innerHTML",
-        "outerHTML"
-    ]
-};
 var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();
     var ul = document.createElement("ul");

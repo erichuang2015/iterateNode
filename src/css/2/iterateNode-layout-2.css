@@ -1,4 +1,4 @@
-*:not('input') {
+*:not(input) {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -44,15 +44,16 @@
     margin:3px 0;
     max-width:100%;
 }
+.iterateNode-obj span{
+
+}
 .iterateNode-obj pre{
-    display: block;
-    padding: 0;
     margin: 10px 0;
     max-width:100%;
     clear:both;
     overflow:auto;
     display: block;
-    padding: 9.5px;
+    padding: 9px;
     font-size: 13px;
     line-height: 1.42857143;
     color: #333;
@@ -61,6 +62,11 @@
     background-color: #f5f5f5;
     border: 1px solid #ccc;
     border-radius: 4px;
+}
+.iterateNode-obj .add-items{
+    padding:10px;
+    cursor:pointer;
+    color:blue;
 }
 .iterateNode-obj .simpleHide{
     display:none;
@@ -79,4 +85,14 @@
 }
 .iterateNode-obj .iterateNode-sanitize-separator1{
     display:none;
+}
+.iterateNode-obj  .iterateNode-sanitize-separator2{
+    display:none;
+}
+.hide{
+    visibility:hidden;
+}
+
+.show{
+    display:block;
 }
