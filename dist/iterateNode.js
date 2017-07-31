@@ -407,7 +407,9 @@ var iterateNode = function(settings){
     var count = 0;
     var alias = settings.filterFunction ? settings.filterFunction(settings.obj) : settings.obj;
     var flatArrays = settings.flatArrays;
+    if(!settings.originalObject) settings.originalObject = settings.obj;
     var options = merge(settings,defaults,true);
+
 
     for(var k in alias){
         var li = parsingNode(k,alias[k],options,count);
