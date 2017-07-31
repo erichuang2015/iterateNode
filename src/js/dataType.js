@@ -9,29 +9,41 @@
  object
  null
  */
-var iterateNodeDataTypes = [
-    {
-        value : "[object Number]",
-        label : "number"
+var iterateNodeDataTypes = {
+    "[object Number]": {
+        label: "number",
+        converter: function () {
+            return Number();
+        }
     },
-    {
-        value : "[object String]",
-        label : "string"
+    "[object String]": {
+        label: "string",
+        converter: function () {
+            return String();
+        }
     },
-    {
-        value : "[object Boolean]",
-        label : "boolean"
+    "[object Boolean]": {
+        label: "boolean",
+        converter: function () {
+            return Boolean();
+        }
     },
-    {
-        value : "[object Array]",
-        label : "list of values"
+    "[object Array]": {
+        label: "list of values",
+        converter: function (obj) {
+            return [];
+        }
     },
-    {
-        value : "[object Object]",
-        label : "list of elements"
+    "[object Object]": {
+        label: "list of elements",
+        converter: function (obj) {
+            return {};
+        }
     },
-    {
-        value : "[object Null]",
-        label : "null"
+    "[object Null]": {
+        label: "null",
+        converter: function (obj) {
+            return null;
+        }
     }
-];
+};

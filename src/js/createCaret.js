@@ -9,8 +9,7 @@ function createCaret(li,nodeIteratorSettings){
     caretA.href="javascript:void()";
     caretA.className="caretA";
     var caret = document.createElement("span");
-    caret.className =  !nodeIteratorSettings.opened ? "caret" : "caret open";
-
+    caret.className = "caret";
     caretA.addEventListener("click",function(e){
         e.preventDefault();
         e.stopPropagation();

@@ -5,8 +5,9 @@
      * @param root - the root object
      * @param value - value to assign
      */
-    function assignParamFromString(string, root, value) {
-        var model = string.split('.');
+    function assignParamFromString(string, root, value, separatore) {
+        var separator = separatore || "?";
+        var model = string.split(separator);
         var actualModel = root;
         for (var i = 0; i < model.length - 1; i++)
             actualModel = actualModel[model[i]];
@@ -14,14 +15,55 @@
         actualModel[model[model.length - 1]] = value;
     }
 
-    function returnParamFromString(string, root) {
+    function assignKeyFromString(string, root, value, separatore) {
+        var separator = separatore || "?";
+        var model = string.split(separator);
+        var actualModel = root;
+        for (var i = 0; i < model.length - 1; i++)
+            actualModel = actualModel[model[i]];
+
+        var temp = actualModel[model[model.length - 1]];
+        delete actualModel[model[model.length - 1]];
+        actualModel[value] = temp;
+    }
+
+    function createKeyFromString(string, root, key, value, separatore) {
+        var separator = separatore || "?";
+        var model = string.split(separator);
+        var actualModel = root;
+        for (var i = 0; i < model.length - 1; i++)
+            actualModel = actualModel[model[i]];
+
+        var finalModel = actualModel[model[model.length - 1]];
+        finalModel[key] = value;
+    }
+
+    function returnParamFromString(string, root,separatore) {
         if ( !string )
             return root;
 
-        var model = string.split('.');
+        var separator = separatore || "?";
+        var model = string.split(separator);
         var actualModel = root;
         for (var i = 0; i < model.length; i++)
             actualModel = actualModel[model[i]];
 
-        return actualModel
+        return actualModel;
+    }
+
+    function deleteParamFromString(string, root,separatore) {
+        var separator = separatore || "?";
+        var model = string.split(separator);
+        var actualModel = root;
+        for (var i = 0; i < model.length - 1; i++)
+            actualModel = actualModel[model[i]];
+
+        //var temp = actualModel[model[model.length - 1]];
+        if( Array.isArray( actualModel[model] ) ){
+            var index = actualModel[model].indexOf( actualModel[model[model.length - 1]] );
+            actualModel[model].splice(index, 1);
+        }
+        else
+            delete actualModel[model[model.length - 1]];
+
     }

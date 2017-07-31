@@ -18,21 +18,14 @@ function parsingNode(k,node,options,count){
     var li = document.createElement("li");
     li.id="iterateNode-" + newCountObject;
     li.setAttribute("data-string-model", newStringModel);
+    li.setAttribute("data-type-of", typeNode);
     li.className="iterateNode-" + typeNode.replace(/[\[\]]/g, "").replace(/\s+/,"-");
     li.innerHTML = "<span class='" + isInnerText +"'><i class='iterateNode-sanitize-key'>" + options.key +
         "</i><b class='iterateNode-sanitize-key-value'" + contentEditable + ">"+ k +
         "</b><span class='iterateNode-sanitize-separator1'>" + options.Separator1 + "</span>" +
         "<span class='iterateNode-sanitize-key-typeof'>" + options.Typeof + "</span>" +
-        "<span class='iterateNode-data-types-typeof'>" +
-            "<select class='iterateNode-data-types hide'></select>" +
-            "<i class='iterateNode-sanitize-key-typeof-value show' data-value='" + typeOfValue +"'>"+ typeOfValue + "</i>"+
-        "</span>" +
+        "<i class='iterateNode-sanitize-key-typeof-value' data-value='" + typeOfValue +"'>"+ typeOfValue + "</i>"+
         "</span>";
-
-
-    if( options.contentEditable ){ // adding contentEditable events
-        iterNodeCntEdit(li,contentEditableList,node,typeNode,newStringModel,newCountObject,options);
-    }
 
     if ( options.sanitizedObjects.indexOf(k) > -1 ) {// sanitizedObjects
         var sanitizedHTML = sanitize( node );
@@ -41,23 +34,33 @@ function parsingNode(k,node,options,count){
     else if( typeof node === "object" && node ) // all javascript objects
     {
         if ( ( ( typeNode == "[object Object]" || typeNode == "[object Array]" ) && !Object.keys(node).length ) &&
-            !options.asyncFunction)
-            return li;
-
-        var settingsChildren = merge({
-            obj:node,
-            stringModel:newStringModel,
-            countObj:newCountObject
-        },options,true);
-        var caretA = createCaret(li,settingsChildren);
-        li.appendChild(caretA);
+            !options.asyncFunction) {
+            //return li;
+        }
+        else {
+            var settingsChildren = merge({
+                obj: node,
+                stringModel: newStringModel,
+                countObj: newCountObject
+            }, options, true);
+            var caretA = createCaret(li, settingsChildren);
+            li.appendChild(caretA);
+        }
     }
     else if ( options.sanitizedObjects.indexOf(k) < 0 ) // all javascript values except sanitizedObjects array values
-        li.insertAdjacentHTML('beforeend',"<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +"</span>" +
-            "<b class='iterateNode-sanitize-value'" + contentEditable + ">" + node + "</b>");
-    /*
-        li.innerHTML += node ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +
+        li.innerHTML += node != null ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +
         "</span><b class='iterateNode-sanitize-value'" + contentEditable + ">" + node + "</b>" : " null";
-*/
+
+
+    if(options.contentEditable){ // adding events for key/values changes
+        eventsLabel(li,options,node,count,k,typeNode,newStringModel);
+        eventRemoveItem(li,options);
+    }
+
+    if( options.contentEditable && contentEditableList ){ // adding contentEditable events
+        eventsList(li,typeNode,options,contentEditableList,count,node,newStringModel,newCountObject);
+    }
+
+
     return li;
 }
