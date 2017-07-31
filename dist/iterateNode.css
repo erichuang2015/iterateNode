@@ -45,9 +45,10 @@
     margin:3px 0;
     max-width:100%;
 }
+.iterateNode-obj span{
+
+}
 .iterateNode-obj pre{
-    display: block;
-    padding: 0;
     margin: 10px 0;
     max-width:100%;
     clear:both;
@@ -63,7 +64,11 @@
     border: 1px solid #ccc;
     border-radius: 4px;
 }
-
+.iterateNode-obj .add-items{
+    padding:10px;
+    cursor:pointer;
+    color:blue;
+}
 .iterateNode-obj .simpleHide{
     display:none;
 }
@@ -82,7 +87,18 @@
 .iterateNode-obj .iterateNode-sanitize-separator1{
     display:none;
 }
-*:not('input') {
+.iterateNode-obj  .iterateNode-sanitize-separator2{
+    display:none;
+}
+.hide{
+    visibility:hidden;
+}
+
+.show{
+    display:block;
+}
+
+*:not(input) {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;

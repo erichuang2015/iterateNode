@@ -6,8 +6,9 @@
      * @param root - the root object
      * @param value - value to assign
      */
-    function assignParamFromString(string, root, value) {
-        var model = string.split('.');
+    function assignParamFromString(string, root, value, separatore) {
+        var separator = separatore || "?";
+        var model = string.split(separator);
         var actualModel = root;
         for (var i = 0; i < model.length - 1; i++)
             actualModel = actualModel[model[i]];
@@ -15,16 +16,57 @@
         actualModel[model[model.length - 1]] = value;
     }
 
-    function returnParamFromString(string, root) {
+    function assignKeyFromString(string, root, value, separatore) {
+        var separator = separatore || "?";
+        var model = string.split(separator);
+        var actualModel = root;
+        for (var i = 0; i < model.length - 1; i++)
+            actualModel = actualModel[model[i]];
+
+        var temp = actualModel[model[model.length - 1]];
+        delete actualModel[model[model.length - 1]];
+        actualModel[value] = temp;
+    }
+
+    function createKeyFromString(string, root, key, value, separatore) {
+        var separator = separatore || "?";
+        var model = string.split(separator);
+        var actualModel = root;
+        for (var i = 0; i < model.length - 1; i++)
+            actualModel = actualModel[model[i]];
+
+        var finalModel = actualModel[model[model.length - 1]];
+        finalModel[key] = value;
+    }
+
+    function returnParamFromString(string, root,separatore) {
         if ( !string )
             return root;
 
-        var model = string.split('.');
+        var separator = separatore || "?";
+        var model = string.split(separator);
         var actualModel = root;
         for (var i = 0; i < model.length; i++)
             actualModel = actualModel[model[i]];
 
-        return actualModel
+        return actualModel;
+    }
+
+    function deleteParamFromString(string, root,separatore) {
+        var separator = separatore || "?";
+        var model = string.split(separator);
+        var actualModel = root;
+        for (var i = 0; i < model.length - 1; i++)
+            actualModel = actualModel[model[i]];
+
+        //var temp = actualModel[model[model.length - 1]];
+        if( Array.isArray( actualModel[model] ) ){
+            var index = actualModel[model].indexOf( actualModel[model[model.length - 1]] );
+            actualModel[model].splice(index, 1);
+        }
+        else
+            delete actualModel[model[model.length - 1]];
+
     }
 /**
  * Created by Simone on 01/09/15.
@@ -114,8 +156,7 @@ function createCaret(li,nodeIteratorSettings){
     caretA.href="javascript:void()";
     caretA.className="caretA";
     var caret = document.createElement("span");
-    caret.className =  !nodeIteratorSettings.opened ? "caret" : "caret open";
-
+    caret.className = "caret";
     caretA.addEventListener("click",function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -162,32 +203,154 @@ function createCaret(li,nodeIteratorSettings){
  object
  null
  */
-var iterateNodeDataTypes = [
-    {
-        value : "[object Number]",
-        label : "number"
+var iterateNodeDataTypes = {
+    "[object Number]": {
+        label: "number",
+        converter: function () {
+            return Number();
+        }
     },
-    {
-        value : "[object String]",
-        label : "string"
+    "[object String]": {
+        label: "string",
+        converter: function () {
+            return String();
+        }
     },
-    {
-        value : "[object Boolean]",
-        label : "boolean"
+    "[object Boolean]": {
+        label: "boolean",
+        converter: function () {
+            return Boolean();
+        }
     },
-    {
-        value : "[object Array]",
-        label : "list of values"
+    "[object Array]": {
+        label: "list of values",
+        converter: function (obj) {
+            return [];
+        }
     },
-    {
-        value : "[object Object]",
-        label : "list of elements"
+    "[object Object]": {
+        label: "list of elements",
+        converter: function (obj) {
+            return {};
+        }
     },
-    {
-        value : "[object Null]",
-        label : "null"
+    "[object Null]": {
+        label: "null",
+        converter: function (obj) {
+            return null;
+        }
     }
-];
+};
+/**
+ * Created by simone.dinuovo on 03/05/2017.
+ */
+function eventsList(li,typeNode,options,contentEditableList,count,node,newStringModel,newCountObject) {
+    li.insertAdjacentHTML('beforeend', contentEditableList);
+    addItems = li.querySelector('.add-items');
+    var ourStringModel = li.getAttribute("data-string-model");
+    var $this = returnParamFromString(ourStringModel,options.originalObject);
+    addItems.addEventListener('click', function (e) {
+        /*var child = li.querySelector('ul');
+        if (!child  && !Object.keys($this).length ) {
+            li.insertAdjacentHTML('beforeend', '<ul></ul>');
+        }
+        else if(child == null || child.style.display == "none")
+            li.querySelector('.caretA').click();*/
+        //var NodeNewElement = li.querySelector('ul');
+        if( li.querySelector('.caretA') )
+            li.removeChild(li.querySelector('.caretA'));
+        var thisLength = Object.keys($this).length ;
+        var thisKey = typeNode == "[object Object]" ? "key" + thisLength : thisLength;
+        options.stringModel = ourStringModel;
+        createKeyFromString(ourStringModel, options.originalObject, thisKey, "value");
+        var settingsChildren = merge({
+            obj: node,
+            stringModel: newStringModel,
+            countObj: newCountObject
+        }, options, true);
+        var caretA = createCaret(li, settingsChildren);
+        if(li.querySelector('ul'))
+            li.replaceChild(caretA,li.querySelector('ul'));
+        else
+            li.appendChild(caretA);
+        li.querySelector('.caretA').click();
+        /*var newLi = parsingNode(thisKey, "value", options, count);
+        NodeNewElement.appendChild(newLi);
+        console.log("ourStringModel", ourStringModel);
+        console.log("newLi.getAttribute('data-string-model')", newLi.getAttribute("data-string-model"));*/
+    });
+};
+
+function eventsLabel(li,options,node,count,k,typeNode,newStringModel){
+    // key e values editable
+    li.querySelectorAll("[contenteditable]").forEach(function(v,i,a){
+        v.addEventListener("blur",function(e){
+            // number sanitation
+            var value = ( typeNode == "[object Number]" && v.className.indexOf("iterateNode-sanitize-key-value") < 0 ) ? isNaN( Number(v.innerText) ) ? 0 : Number(v.innerText) : v.innerText;
+            // boolean sanitation
+            value = ( typeNode == "[object Boolean]" && v.className.indexOf("iterateNode-sanitize-key-value") < 0 ) ? ( v.innerText.toLowerCase() == "true" ) : value;
+            if(value != v.innerText)
+                v.innerText = value;
+            if(v.className.indexOf("iterateNode-sanitize-key-value") >= 0 ) {
+                var ourStringModel = li.getAttribute("data-string-model");
+                var decriptStringModel = ourStringModel.split("?");
+                decriptStringModel[decriptStringModel.length-1] = v.innerText;
+                var newAsStringModel = decriptStringModel.join("?");
+                assignKeyFromString(ourStringModel, options.originalObject, v.innerText);
+                var parentNode = li.parentNode;
+                var parentStringNode = parentNode.parentNode.getAttribute("data-string-model");
+                options.stringModel = parentStringNode;
+                var newLi = parsingNode(v.innerText,node,options,count);
+                parentNode.replaceChild(newLi, li);
+            }
+            else
+                assignParamFromString(newStringModel, options.originalObject, value);
+
+            console.log("[originalObject] : \n", options.originalObject);
+        });
+    });
+
+    // change type
+    var typeOfElement = li.querySelector('.iterateNode-sanitize-key-typeof-value');
+    typeOfElement.addEventListener('click',function(e){
+        var newSelect=document.createElement('select');
+        var opt = document.createElement("option");
+        newSelect.appendChild(opt);
+        for(element in iterateNodeDataTypes)
+        {
+            var opt = document.createElement("option");
+            opt.value= element;
+            opt.innerHTML = iterateNodeDataTypes[element].label;
+            newSelect.appendChild(opt);
+        }
+        li.children[0].replaceChild(newSelect,typeOfElement);
+        newSelect.addEventListener('change',function(e){
+            var ourStringModel = li.getAttribute("data-string-model");
+            var newValue = iterateNodeDataTypes[newSelect.value].converter();
+            console.log("newValue", newValue);
+            assignParamFromString(ourStringModel, options.originalObject, newValue);
+            var $this = returnParamFromString(ourStringModel,options.originalObject);
+            console.log($this);
+            console.log("options.originalObject",options.originalObject);
+            var parentNode = li.parentNode;
+            options.stringModel = parentNode.parentNode.getAttribute("data-string-model");
+            var newLi = parsingNode(k,newValue,options,count);
+            console.log("iterateNode",newLi);
+            parentNode.replaceChild(newLi, li);
+        })
+    })
+}
+function eventRemoveItem(li,options){
+    var i = document.createElement("i");
+    i.className = 'iterateNode-delete-item';
+    i.innerHTML = "-";
+    li.appendChild(i);
+    i.addEventListener('click',function(e){
+        var ourStringModel = li.getAttribute("data-string-model");
+        deleteParamFromString(ourStringModel, options.originalObject);
+        li.parentNode.removeChild(li);
+    });
+}
 function filterObject( obj, predicate ) {
     var target = Array.isArray(obj) ? [] : {};
     for (var i in obj) {
@@ -216,6 +379,22 @@ function filterObject( obj, predicate ) {
  * @returns {documentFragment} - See {@link https://developer.mozilla.org/it/docs/Web/API/DocumentFragment}
  */
 
+var defaults = {
+    countObj : "",
+    stringModel : "",
+    key : "key:",
+    Separator1 : " -- ",
+    Typeof : "typeof:",
+    Separator2 : " -- ",
+    Include : [],
+    Exclude : [],
+    sanitizedObjects : [
+        "outerText",
+        "innerText",
+        "innerHTML",
+        "outerHTML"
+    ]
+};
 var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();
     var ul = document.createElement("ul");
@@ -283,21 +462,14 @@ function parsingNode(k,node,options,count){
     var li = document.createElement("li");
     li.id="iterateNode-" + newCountObject;
     li.setAttribute("data-string-model", newStringModel);
+    li.setAttribute("data-type-of", typeNode);
     li.className="iterateNode-" + typeNode.replace(/[\[\]]/g, "").replace(/\s+/,"-");
     li.innerHTML = "<span class='" + isInnerText +"'><i class='iterateNode-sanitize-key'>" + options.key +
         "</i><b class='iterateNode-sanitize-key-value'" + contentEditable + ">"+ k +
         "</b><span class='iterateNode-sanitize-separator1'>" + options.Separator1 + "</span>" +
         "<span class='iterateNode-sanitize-key-typeof'>" + options.Typeof + "</span>" +
-        "<span class='iterateNode-data-types-typeof'>" +
-            "<select class='iterateNode-data-types hide'></select>" +
-            "<i class='iterateNode-sanitize-key-typeof-value show' data-value='" + typeOfValue +"'>"+ typeOfValue + "</i>"+
-        "</span>" +
+        "<i class='iterateNode-sanitize-key-typeof-value' data-value='" + typeOfValue +"'>"+ typeOfValue + "</i>"+
         "</span>";
-
-
-    if( options.contentEditable ){ // adding contentEditable events
-        iterNodeCntEdit(li,contentEditableList,node,typeNode,newStringModel,newCountObject,options);
-    }
 
     if ( options.sanitizedObjects.indexOf(k) > -1 ) {// sanitizedObjects
         var sanitizedHTML = sanitize( node );
@@ -306,24 +478,34 @@ function parsingNode(k,node,options,count){
     else if( typeof node === "object" && node ) // all javascript objects
     {
         if ( ( ( typeNode == "[object Object]" || typeNode == "[object Array]" ) && !Object.keys(node).length ) &&
-            !options.asyncFunction)
-            return li;
-
-        var settingsChildren = merge({
-            obj:node,
-            stringModel:newStringModel,
-            countObj:newCountObject
-        },options,true);
-        var caretA = createCaret(li,settingsChildren);
-        li.appendChild(caretA);
+            !options.asyncFunction) {
+            //return li;
+        }
+        else {
+            var settingsChildren = merge({
+                obj: node,
+                stringModel: newStringModel,
+                countObj: newCountObject
+            }, options, true);
+            var caretA = createCaret(li, settingsChildren);
+            li.appendChild(caretA);
+        }
     }
     else if ( options.sanitizedObjects.indexOf(k) < 0 ) // all javascript values except sanitizedObjects array values
-        li.insertAdjacentHTML('beforeend',"<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +"</span>" +
-            "<b class='iterateNode-sanitize-value'" + contentEditable + ">" + node + "</b>");
-    /*
-        li.innerHTML += node ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +
+        li.innerHTML += node != null ? "<span class='iterateNode-sanitize-separator2'>"+ options.Separator2 +
         "</span><b class='iterateNode-sanitize-value'" + contentEditable + ">" + node + "</b>" : " null";
-*/
+
+
+    if(options.contentEditable){ // adding events for key/values changes
+        eventsLabel(li,options,node,count,k,typeNode,newStringModel);
+        eventRemoveItem(li,options);
+    }
+
+    if( options.contentEditable && contentEditableList ){ // adding contentEditable events
+        eventsList(li,typeNode,options,contentEditableList,count,node,newStringModel,newCountObject);
+    }
+
+
     return li;
 }
 /**
@@ -341,23 +523,5 @@ var sanitize = function(html){
         return html;
 };
 
-var defaults = {
-    countObj : "",
-    stringModel : "",
-    key : "key:",
-    Separator1 : " -- ",
-    Typeof : "typeof:",
-    Separator2 : " -- ",
-    Include : [],
-    Exclude : [],
-    sanitizedObjects : [
-        "outerText",
-        "innerText",
-        "innerHTML",
-        "outerHTML"
-    ],
-    iterateNodeDataTypes : iterateNodeDataTypes,
-    asyncFunction : false
-};
 window.iterateNode = iterateNode;
 })();
