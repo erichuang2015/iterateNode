@@ -7,13 +7,6 @@ function eventsList(li,typeNode,options,contentEditableList,count,node,newString
     var ourStringModel = li.getAttribute("data-string-model");
     var $this = returnParamFromString(ourStringModel,options.originalObject);
     addItems.addEventListener('click', function (e) {
-        /*var child = li.querySelector('ul');
-        if (!child  && !Object.keys($this).length ) {
-            li.insertAdjacentHTML('beforeend', '<ul></ul>');
-        }
-        else if(child == null || child.style.display == "none")
-            li.querySelector('.caretA').click();*/
-        //var NodeNewElement = li.querySelector('ul');
         if( li.querySelector('.caretA') )
             li.removeChild(li.querySelector('.caretA'));
         var thisLength = Object.keys($this).length ;
@@ -31,10 +24,6 @@ function eventsList(li,typeNode,options,contentEditableList,count,node,newString
         else
             li.appendChild(caretA);
         li.querySelector('.caretA').click();
-        /*var newLi = parsingNode(thisKey, "value", options, count);
-        NodeNewElement.appendChild(newLi);
-        console.log("ourStringModel", ourStringModel);
-        console.log("newLi.getAttribute('data-string-model')", newLi.getAttribute("data-string-model"));*/
     });
 };
 
@@ -63,7 +52,6 @@ function eventsLabel(li,options,node,count,k,typeNode,newStringModel){
             else
                 assignParamFromString(newStringModel, options.originalObject, value);
 
-            console.log("[originalObject] : \n", options.originalObject);
         });
     });
 
@@ -84,15 +72,11 @@ function eventsLabel(li,options,node,count,k,typeNode,newStringModel){
         newSelect.addEventListener('change',function(e){
             var ourStringModel = li.getAttribute("data-string-model");
             var newValue = iterateNodeDataTypes[newSelect.value].converter();
-            console.log("newValue", newValue);
             assignParamFromString(ourStringModel, options.originalObject, newValue);
             var $this = returnParamFromString(ourStringModel,options.originalObject);
-            console.log($this);
-            console.log("options.originalObject",options.originalObject);
             var parentNode = li.parentNode;
             options.stringModel = parentNode.parentNode.getAttribute("data-string-model");
             var newLi = parsingNode(k,newValue,options,count);
-            console.log("iterateNode",newLi);
             parentNode.replaceChild(newLi, li);
         })
     })

@@ -19,6 +19,7 @@
 var defaults = {
     countObj : "",
     stringModel : "",
+    stringModelSeparator : "?",
     key : "key:",
     Separator1 : " -- ",
     Typeof : "typeof:",
@@ -32,6 +33,8 @@ var defaults = {
         "outerHTML"
     ]
 };
+var originalObject = {};
+var stringModelSeparator = "";
 var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();
     var ul = document.createElement("ul");
@@ -45,8 +48,9 @@ var iterateNode = function(settings){
     var alias = settings.filterFunction ? settings.filterFunction(settings.obj) : settings.obj;
     var flatArrays = settings.flatArrays;
     if(!settings.originalObject) settings.originalObject = settings.obj;
+    originalObject = settings.originalObject;
     var options = merge(settings,defaults,true);
-
+    stringModelSeparator = options.stringModelSeparator;
 
     for(var k in alias){
         var li = parsingNode(k,alias[k],options,count);
@@ -56,5 +60,9 @@ var iterateNode = function(settings){
 
 
     docfrag.appendChild(ul);
+    if( options.contentEditable && options.dragging && !options["dragging-init"]) {
+        options["dragging-init"] = true;
+        dragging(options);
+    }
     return docfrag;
 };

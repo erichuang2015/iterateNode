@@ -10,7 +10,7 @@ function parsingNode(k,node,options,count){
         node = newValues.node;
         typeNode = Object.prototype.toString.call(node);
     }
-    var newStringModel = !options.stringModel.length ? k : options.stringModel + "?" + k;
+    var newStringModel = !options.stringModel || !options.stringModel.length ? k : options.stringModel + "?" + k;
     var newCountObject = options.countObj + count;
     var isInnerText = options.sanitizedObjects.indexOf(k) > -1 ? "node-iterator-text-content" : "";
     var contentEditable = options.contentEditable ? " contenteditable " : "";
@@ -61,6 +61,8 @@ function parsingNode(k,node,options,count){
         eventsList(li,typeNode,options,contentEditableList,count,node,newStringModel,newCountObject);
     }
 
+    if( options.contentEditable && options.dragging)
+        li.setAttribute("draggable","true");
 
     return li;
 }

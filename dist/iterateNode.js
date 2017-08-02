@@ -241,6 +241,139 @@ var iterateNodeDataTypes = {
         }
     }
 };
+	var dummy = document.getElementById("drag-highlight");
+	function dragging(options) {
+		var dragged = false;
+		var target = false;
+		var dropAfter = false;
+		/* events fired on the draggable target */
+		document.addEventListener("drag", function( event ) {
+			event.preventDefault();
+			event.stopPropagation();
+		}, false);
+
+		document.addEventListener("dragstart", function( event ) {
+			if(event.target.nodeName.toLowerCase() != "li" )
+				return;
+			// store a ref. on the dragged elem
+			dragged = event.target;
+			// make it half transparent
+			event.target.style.opacity = .5;
+			event.dataTransfer.dropEffect = "move";
+		}, false);
+
+		document.addEventListener("dragend", function( event ) {
+			// reset the transparency
+			event.target.style.opacity = "";
+			dummy.style.display = "none";
+			event.dataTransfer.setData("dragging", "false");
+			console.log("dragend");
+		}, false);
+
+		document.addEventListener("dragexit", function( event ) {
+			// reset the transparency
+			event.target.style.opacity = "";
+			dummy.style.display = "none";
+			event.dataTransfer.setData("dragging", "false");
+			console.log("dragexit");
+		}, false);
+
+		/* events fired on the drop targets */
+		document.addEventListener("dragover", function( event ) {
+			// prevent default to allow drop
+			event.preventDefault();
+			event.stopPropagation();
+			event.dataTransfer.dropEffect = "move";
+
+		}, false);
+
+		document.addEventListener("dragenter", function( event ) {
+			event.preventDefault();
+			event.stopPropagation();
+			if(target)
+				target.style.background = "";
+			// highlight potential drop target when the draggable element enters it
+			if(event.target.nodeName.toLowerCase() != "li" ) {
+					target = findUpTag(event.target, "li");
+					if(!target) return;
+					dropAfter = true;
+			}
+			else {
+				target = event.target;
+				dropAfter = false;
+			}
+			var position = offset(target);
+			dummy.style.width = ( target.offsetWidth + position.left ) + "px";
+			dummy.style.top = ( position.top + target.offsetHeight + 7 ) + "px";
+			dummy.style.display = "block";
+			target.style.background = "purple";
+			event.dataTransfer.setData("dragging", "true");
+		}, false);
+
+		document.addEventListener("dragleave", function( event ) {
+			// reset background of potential drop target when the draggable element leaves it
+			//event.target.style.background = "";
+			//if(dragged) dragged.style.opacity = "";
+			//if(target) target.style.background = "";
+			//event.dataTransfer.setData("dragging", "false");
+
+			console.log("dragleave");
+
+		}, false);
+
+		document.addEventListener("drop", drop, true);
+
+		function drop(event){
+			// prevent default action (open as link for some elements)
+			event.preventDefault();
+			event.stopPropagation();
+
+			/* non si possono droppare tutti gli elememti in un array, solo gli elementi che sono array */
+			/*var targetIsArray = target.getAttribute("data-type-of") == "[object Array]";
+			 var draggedIsArrayElement = window.getComputedStyle( dragged.querySelector("span > .iterateNode-sanitize-key-value") ).display != "none";
+			 if( !targetIsArray && !draggedIsArrayElement){
+			 event.dataTransfer.dropEffect = "none"
+			 event.target.style.opacity = "";
+			 if(target)
+			 target.style.background = "";
+			 dummy.style.display = "none";
+			 return;
+			 }*/
+			// move dragged elem to the selected drop target
+			var draggedStringModel = dragged.getAttribute("data-string-model");
+			var key = draggedStringModel.split(stringModelSeparator);
+			var draggedPosition = returnParamFromString(draggedStringModel,originalObject);
+			/* DROP is fired multiple times in nested elements */
+			/* TODO is this possibile to avoid? */
+			if(typeof draggedPosition === "undefined")
+				return;
+			var eventTargetStringModel = target.getAttribute("data-string-model");
+			var lastTargetStringModel = eventTargetStringModel.split(stringModelSeparator);
+			console.log("draggedStringModel, eventTargetStringModel", draggedStringModel, eventTargetStringModel);
+			console.log("draggedPosition", draggedPosition);
+
+			deleteParamFromString(draggedStringModel, originalObject);
+			dropAfter = !dropAfter && !target.querySelector("ul") ? true : dropAfter;
+
+			if(dropAfter){
+				var parentStringNode = lastTargetStringModel.slice(0,lastTargetStringModel.length-1).join(stringModelSeparator);
+				console.log("parentStringNode",parentStringNode);
+				createKeyFromString(parentStringNode, originalObject, key[key.length-1], draggedPosition);
+				dragged.parentNode.removeChild( dragged );
+				target.parentNode.appendChild( dragged );
+			}
+			else {
+				createKeyFromString(eventTargetStringModel, originalObject, key[key.length - 1], draggedPosition);
+				dragged.parentNode.removeChild( dragged );
+				target.querySelector("ul").appendChild( dragged );
+			}
+			/* reset styles */
+			dragged.style.opacity = "";
+			target.style.background = "";
+			dummy.style.display = "none";
+		}
+	}
+
 /**
  * Created by simone.dinuovo on 03/05/2017.
  */
@@ -250,13 +383,6 @@ function eventsList(li,typeNode,options,contentEditableList,count,node,newString
     var ourStringModel = li.getAttribute("data-string-model");
     var $this = returnParamFromString(ourStringModel,options.originalObject);
     addItems.addEventListener('click', function (e) {
-        /*var child = li.querySelector('ul');
-        if (!child  && !Object.keys($this).length ) {
-            li.insertAdjacentHTML('beforeend', '<ul></ul>');
-        }
-        else if(child == null || child.style.display == "none")
-            li.querySelector('.caretA').click();*/
-        //var NodeNewElement = li.querySelector('ul');
         if( li.querySelector('.caretA') )
             li.removeChild(li.querySelector('.caretA'));
         var thisLength = Object.keys($this).length ;
@@ -274,10 +400,6 @@ function eventsList(li,typeNode,options,contentEditableList,count,node,newString
         else
             li.appendChild(caretA);
         li.querySelector('.caretA').click();
-        /*var newLi = parsingNode(thisKey, "value", options, count);
-        NodeNewElement.appendChild(newLi);
-        console.log("ourStringModel", ourStringModel);
-        console.log("newLi.getAttribute('data-string-model')", newLi.getAttribute("data-string-model"));*/
     });
 };
 
@@ -306,7 +428,6 @@ function eventsLabel(li,options,node,count,k,typeNode,newStringModel){
             else
                 assignParamFromString(newStringModel, options.originalObject, value);
 
-            console.log("[originalObject] : \n", options.originalObject);
         });
     });
 
@@ -327,15 +448,11 @@ function eventsLabel(li,options,node,count,k,typeNode,newStringModel){
         newSelect.addEventListener('change',function(e){
             var ourStringModel = li.getAttribute("data-string-model");
             var newValue = iterateNodeDataTypes[newSelect.value].converter();
-            console.log("newValue", newValue);
             assignParamFromString(ourStringModel, options.originalObject, newValue);
             var $this = returnParamFromString(ourStringModel,options.originalObject);
-            console.log($this);
-            console.log("options.originalObject",options.originalObject);
             var parentNode = li.parentNode;
             options.stringModel = parentNode.parentNode.getAttribute("data-string-model");
             var newLi = parsingNode(k,newValue,options,count);
-            console.log("iterateNode",newLi);
             parentNode.replaceChild(newLi, li);
         })
     })
@@ -361,6 +478,15 @@ function filterObject( obj, predicate ) {
     return target;
 };
 
+function findUpTag(el, tag) {
+    console.log("el, el.parentNode ",el, el.parentNode)
+    while (el.parentNode) {
+        el = el.parentNode;
+        if (el.nodeName.toLowerCase() == tag)
+            return el;
+    }
+    return null;
+}
 /**
  * iterateNode constructor
  *
@@ -382,6 +508,7 @@ function filterObject( obj, predicate ) {
 var defaults = {
     countObj : "",
     stringModel : "",
+    stringModelSeparator : "?",
     key : "key:",
     Separator1 : " -- ",
     Typeof : "typeof:",
@@ -395,6 +522,8 @@ var defaults = {
         "outerHTML"
     ]
 };
+var originalObject = {};
+var stringModelSeparator = "";
 var iterateNode = function(settings){
     var docfrag = document.createDocumentFragment();
     var ul = document.createElement("ul");
@@ -408,8 +537,9 @@ var iterateNode = function(settings){
     var alias = settings.filterFunction ? settings.filterFunction(settings.obj) : settings.obj;
     var flatArrays = settings.flatArrays;
     if(!settings.originalObject) settings.originalObject = settings.obj;
+    originalObject = settings.originalObject;
     var options = merge(settings,defaults,true);
-
+    stringModelSeparator = options.stringModelSeparator;
 
     for(var k in alias){
         var li = parsingNode(k,alias[k],options,count);
@@ -419,6 +549,10 @@ var iterateNode = function(settings){
 
 
     docfrag.appendChild(ul);
+    if( options.contentEditable && options.dragging && !options["dragging-init"]) {
+        options["dragging-init"] = true;
+        dragging(options);
+    }
     return docfrag;
 };
 /**
@@ -445,6 +579,55 @@ function merge(add,base,extension) {
 }
 
 /**
+ * Created by Simone on 25/12/14.
+ */
+function offset(elem){
+
+    var box = { top: 0, left: 0 };
+    var docElem = document.documentElement;
+    var win = window;
+    var core_strundefined = typeof undefined;
+    // If we don't have gBCR, just use 0,0 rather than error
+    // BlackBerry 5, iOS 3 (original iPhone)
+    if ( typeof elem.getBoundingClientRect !== core_strundefined ) {
+        box = elem.getBoundingClientRect();
+    }
+
+    return {
+        top: box.top  + ( win.pageYOffset || docElem.scrollTop )  - ( docElem.clientTop  || 0 ),
+        left: box.left + ( win.pageXOffset || docElem.scrollLeft ) - ( docElem.clientLeft || 0 )
+    };
+}
+
+
+
+(function() {
+    var throttle = function(type, name, obj) {
+        obj = obj || window;
+        var running = false;
+        var func = function() {
+            if (running) { return; }
+            running = true;
+            requestAnimationFrame(function() {
+                obj.dispatchEvent(new CustomEvent(name));
+                running = false;
+            });
+        };
+        obj.addEventListener(type, func);
+    };
+
+    /* init - you can init any event */
+    throttle("resize", "optimizedResize");
+})();
+
+// handle event
+/*
+window.addEventListener("optimizedResize", function() {
+    console.log("Resource conscious resize callback!");
+});
+*/
+
+/**
  * Created by Simone on 02/09/15.
  */
 function parsingNode(k,node,options,count){
@@ -456,7 +639,7 @@ function parsingNode(k,node,options,count){
         node = newValues.node;
         typeNode = Object.prototype.toString.call(node);
     }
-    var newStringModel = !options.stringModel.length ? k : options.stringModel + "?" + k;
+    var newStringModel = !options.stringModel || !options.stringModel.length ? k : options.stringModel + "?" + k;
     var newCountObject = options.countObj + count;
     var isInnerText = options.sanitizedObjects.indexOf(k) > -1 ? "node-iterator-text-content" : "";
     var contentEditable = options.contentEditable ? " contenteditable " : "";
@@ -507,6 +690,8 @@ function parsingNode(k,node,options,count){
         eventsList(li,typeNode,options,contentEditableList,count,node,newStringModel,newCountObject);
     }
 
+    if( options.contentEditable && options.dragging)
+        li.setAttribute("draggable","true");
 
     return li;
 }
