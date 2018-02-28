@@ -59,9 +59,9 @@
             actualModel = actualModel[model[i]];
 
         //var temp = actualModel[model[model.length - 1]];
-        if( Array.isArray( actualModel[model] ) ){
-            var index = actualModel[model].indexOf( actualModel[model[model.length - 1]] );
-            actualModel[model].splice(index, 1);
+        if( Array.isArray( actualModel ) ){
+            var index = actualModel.indexOf( actualModel[model[model.length - 1]] );
+            actualModel.splice(index, 1);
         }
         else
             delete actualModel[model[model.length - 1]];

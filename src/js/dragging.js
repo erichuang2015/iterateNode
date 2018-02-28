@@ -68,62 +68,47 @@
 		}, false);
 
 		document.addEventListener("dragleave", function( event ) {
-			// reset background of potential drop target when the draggable element leaves it
-			//event.target.style.background = "";
-			//if(dragged) dragged.style.opacity = "";
-			//if(target) target.style.background = "";
-			//event.dataTransfer.setData("dragging", "false");
 
-			console.log("dragleave");
 
 		}, false);
 
-		document.addEventListener("drop", drop, true);
+		document.addEventListener("drop", drop, false);
 
 		function drop(event){
 			// prevent default action (open as link for some elements)
 			event.preventDefault();
 			event.stopPropagation();
 
-			/* non si possono droppare tutti gli elememti in un array, solo gli elementi che sono array */
-			/*var targetIsArray = target.getAttribute("data-type-of") == "[object Array]";
-			 var draggedIsArrayElement = window.getComputedStyle( dragged.querySelector("span > .iterateNode-sanitize-key-value") ).display != "none";
-			 if( !targetIsArray && !draggedIsArrayElement){
-			 event.dataTransfer.dropEffect = "none"
-			 event.target.style.opacity = "";
-			 if(target)
-			 target.style.background = "";
-			 dummy.style.display = "none";
-			 return;
-			 }*/
-			// move dragged elem to the selected drop target
 			var draggedStringModel = dragged.getAttribute("data-string-model");
 			var key = draggedStringModel.split(stringModelSeparator);
-			var draggedPosition = returnParamFromString(draggedStringModel,originalObject);
+			var draggedValue = returnParamFromString(draggedStringModel,originalObject);
 			/* DROP is fired multiple times in nested elements */
 			/* TODO is this possibile to avoid? */
-			if(typeof draggedPosition === "undefined")
+			if(typeof draggedValue === "undefined")
 				return;
 			var eventTargetStringModel = target.getAttribute("data-string-model");
 			var lastTargetStringModel = eventTargetStringModel.split(stringModelSeparator);
+			var parentStringNode = lastTargetStringModel.slice(0,lastTargetStringModel.length-1).join(stringModelSeparator);
+
+			/* console.log */
 			console.log("draggedStringModel, eventTargetStringModel", draggedStringModel, eventTargetStringModel);
-			console.log("draggedPosition", draggedPosition);
+			console.log("draggedValue", draggedValue);
+			console.log("key", key[key.length - 1]);
+			console.log("targetElement", target);
+			console.log("draggedElement", dragged);
+			console.log("parentStringNode", parentStringNode);
+			console.log("originalObject", originalObject);
+			console.log("draggedElementObj, eventTargetElementObj", returnParamFromString(draggedStringModel,originalObject), returnParamFromString(eventTargetStringModel,originalObject));
+			console.log("parentStringElement", returnParamFromString(parentStringNode,originalObject) );
+			console.log("eventTargetElementObj", Array.isArray( returnParamFromString(eventTargetStringModel,originalObject) ));
+			console.log("parentStringElement", Array.isArray( returnParamFromString(parentStringNode,originalObject) ));
+			/* console.log */
 
 			deleteParamFromString(draggedStringModel, originalObject);
-			dropAfter = !dropAfter && !target.querySelector("ul") ? true : dropAfter;
+			createKeyFromString(eventTargetStringModel, originalObject, key[key.length - 1], draggedValue);
+			dragged.parentNode.removeChild( dragged );
+			target.querySelector("ul").appendChild( dragged );
 
-			if(dropAfter){
-				var parentStringNode = lastTargetStringModel.slice(0,lastTargetStringModel.length-1).join(stringModelSeparator);
-				console.log("parentStringNode",parentStringNode);
-				createKeyFromString(parentStringNode, originalObject, key[key.length-1], draggedPosition);
-				dragged.parentNode.removeChild( dragged );
-				target.parentNode.appendChild( dragged );
-			}
-			else {
-				createKeyFromString(eventTargetStringModel, originalObject, key[key.length - 1], draggedPosition);
-				dragged.parentNode.removeChild( dragged );
-				target.querySelector("ul").appendChild( dragged );
-			}
 			/* reset styles */
 			dragged.style.opacity = "";
 			target.style.background = "";

@@ -94,3 +94,9 @@
 .show{
     display:block;
 }
+
+b.iterateNode-sanitize-value[contenteditable]{
+    min-width:20px;
+    min-height:20px;
+    display:inline-block;
+}
