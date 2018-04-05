@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IterateNodeReact</title>
+    <link href="../../src/css/iterateNode-layout-2.css" rel="stylesheet"/>
+</head>
+<body>
+<pre>
+    <div id="root" class="iterateNode-obj"></div>
+</pre>
+
+<!-- react -->
+<script src="//unpkg.com/react/umd/react.development.js"></script>
+<script src="//unpkg.com/react-dom/umd/react-dom.development.js"></script>
+<!-->
+
+<script src="modelExample.js"></script>
+
+<!--<script src="../../lib/_iterateNodeReact.js"></script>-->
+
+<script src="../../lib/bundle.js"></script>
+
+<script>
+    var defaults = {
+        countObj : "",
+        stringModel : "",
+        stringModelSeparator : "?",
+        key : "key:",
+        Separator1 : " -- ",
+        Typeof : "typeof:",
+        Separator2 : " -- ",
+        Include : [],
+        Exclude : [],
+        sanitizedObjects : [
+            "outerText",
+            "innerText",
+            "innerHTML",
+            "outerHTML"
+        ],
+        contentEditable : true
+    };
+    iterateNode = ReactDOM.render(
+            React.createElement(IterateNode, { obj: myJSONObject,options : defaults }, null),
+            document.getElementById('root')
+    );
+</script>
+</body>
+</html>
