@@ -4,7 +4,7 @@ import {RenderEl} from './RenderElement';
 class IterateNode extends React.Component {
   constructor(props) {
     super(props);
-    this.state = props.filterFunction ? props.filterFunction(props.obj) : props.obj;
+    this.state = props.obj;
     this.options = props.options;
     this.typeOfFilter = props.typeOfFilter;
   }
@@ -15,6 +15,7 @@ class IterateNode extends React.Component {
     for (var key in obj) {
       var value = obj[key];
       var keyName = !treeKey.length ? key : treeKey + "?" + key;
+      console.log(keyName);
       rows.push(RenderEl(key,value,keyName,this));
     }
     return rows;

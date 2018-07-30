@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test.example.3</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link href="../../src/css/iterateNode-layout-3.css" rel="stylesheet">
+</head>
+<body>
+    <div id="prova">
+        <article data-some-attribute="some attribute">
+            <h1>prova</h1>
+            <h2>sottoprova</h2>
+            <p>A paragraph</p>
+            <br/>
+            <p>another paragraph and a <a href="#">link</a></p>
+        </article>
+    </div>
+    <div id="iterateNode-obj">
+
+    </div>
+    <script src="../../src/new_new_js/innerElements/spanForDrag.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanCaret.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanAddItem.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanElementDelete.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanForKey.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanForTypeof.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanSeparator.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanValue.js"></script>
+    <script src="../../src/new_new_js/innerElements/elementRoot.js"></script>
+
+    <script src="../../src/new_new_js/events/addElement.js"></script>
+    <script src="../../src/new_new_js/events/changeKeyOrValue.js"></script>
+    <script src="../../src/new_new_js/events/changeType.js"></script>
+    <script src="../../src/new_new_js/events/openObject.js"></script>
+    <script src="../../src/new_new_js/events/removeElement.js"></script>
+    <script src="../../src/new_new_js/events/dragging.js"></script>
+
+    <script src="../../src/new_new_js/modelParsing/assignParamFromString.js"></script>
+    <script src="../../src/new_new_js/modelParsing/assignKeyFromString.js"></script>
+    <script src="../../src/new_new_js/modelParsing/createKeyFromString.js"></script>
+    <script src="../../src/new_new_js/modelParsing/deleteParamFromString.js"></script>
+    <script src="../../src/new_new_js/modelParsing/returnParamFromString.js"></script>
+
+    <script src="../../src/new_new_js/isDescendant.js"></script>
+    <script src="../../src/new_new_js/merge.js"></script>
+    <script src="../../src/new_new_js/offset.js"></script>
+    <script src="../../src/new_new_js/defaults.js"></script>
+    <script src="../../src/new_new_js/iteration.js"></script>
+    <script src="../../src/new_new_js/dataType.js"></script>
+    <script src="../../src/new_new_js/main.js"></script>
+    <script src="../../src/new_new_js/template.js"></script>
+
+
+
+<script>
+    function escapeHtml(unsafe) {
+        return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+    }
+    function fromPathToDOM(path){
+        var startPath = document.getElementById('prova');
+        if(!path.length)
+            return startPath;
+        var pathSplit = path.split("?");
+
+        for(var i = 0;i<pathSplit.length;i++){
+            startPath = startPath.childNodes[pathSplit[i]];
+        }
+        return startPath;
+    }
+    var conf = {
+        renderChildren : function(ob){
+            var returnObj = [];
+            var childNodes = ob.childNodes;
+            for(var k in childNodes){
+                var obj = childNodes[k];
+                var DOMtype = obj.tagName;
+                var attributes = "";
+                var returnString = "";
+
+                if ( !DOMtype ){
+                    if ( obj.nodeName == "#comment" )
+                        returnString = "<!--" + obj.nodeValue + "-->";
+
+                    if ( obj.nodeName == "#text" )
+                        returnString = obj.nodeValue;
+
+                    returnObj[returnString] = "";
+                }
+                else {
+                    if ( obj.attributes )
+                        for(var i = 0; i<obj.attributes.length;i++)
+                            attributes += " " + obj.attributes[i].nodeName + "=\"" + obj.attributes[i].nodeValue + "\"";
+
+                    returnString = "<" + DOMtype + attributes + ">";
+                    returnObj.push({
+                        key : returnString,
+                        el : {}
+                    });
+                }
+            }
+            return returnObj;
+        }
+    };
+    iterateNodeObj = new iterateNode(document.getElementById("iterateNode-obj"),document.getElementById('prova'),conf);
+</script>
+</body>
+</html>

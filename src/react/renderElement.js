@@ -12,7 +12,8 @@ function DataTypes(instance,treeKey){
     return returnDataTypes();
 }
 
-function RenderElInner(instance,k,typeNode,typeOfValue,isInnerText,treeKey) {
+function RenderElInner(instance,k,typeNode,isInnerText,treeKey) {
+    console.log(treeKey);
     return (
     <span className={isInnerText}>
         <i className="iterateNode-sanitize-key">{instance.options.key}</i>
@@ -36,14 +37,13 @@ function RenderElInner(instance,k,typeNode,typeOfValue,isInnerText,treeKey) {
 
 export function RenderEl(key,value, treeKey,instance){
     // filtro della vista
-    if( instance.typeOfFilter){
+    /*if( instance.typeOfFilter){
         var newValues = options.typeOfFilter(typeNode,value);
         var typeOfValue = newValues.typeofValue;
         value = newValues.node;
         typeNode = Object.prototype.toString.call(value);
-    }
-    var typeNode = typeNode || Object.prototype.toString.call(value);
-    var typeOfValue = typeOfValue || typeNode;
+    }*/
+    var typeNode = Object.prototype.toString.call(value);
     var isInnerText = instance.options.sanitizedObjects.indexOf(key) > -1 ? "node-iterator-text-content" : "";
     if( typeNode == "[object Object]" || typeNode == "[object Array]") {
         return (

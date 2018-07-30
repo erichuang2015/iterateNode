@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test.example.2</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,user-scalable=no">
+    <link href="../../src/css/iterateNode-layout-3.css" rel="stylesheet">
+</head>
+<body>
+<input type="file" id="inputFiles" />
+<button onclick="createNew()">Create New</button>
+    <div id="iterateNode-obj">
+
+    </div>
+    <script src="../../src/new_new_js/innerElements/spanForDrag.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanCaret.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanAddItem.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanElementDelete.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanForKey.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanForTypeof.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanSeparator.js"></script>
+    <script src="../../src/new_new_js/innerElements/spanValue.js"></script>
+    <script src="../../src/new_new_js/innerElements/elementRoot.js"></script>
+
+    <script src="../../src/new_new_js/events/addElement.js"></script>
+    <script src="../../src/new_new_js/events/changeKeyOrValue.js"></script>
+    <script src="../../src/new_new_js/events/changeType.js"></script>
+    <script src="../../src/new_new_js/events/openObject.js"></script>
+    <script src="../../src/new_new_js/events/removeElement.js"></script>
+    <script src="../../src/new_new_js/events/dragging.js"></script>
+
+    <script src="../../src/new_new_js/modelParsing/assignParamFromString.js"></script>
+    <script src="../../src/new_new_js/modelParsing/assignKeyFromString.js"></script>
+    <script src="../../src/new_new_js/modelParsing/createKeyFromString.js"></script>
+    <script src="../../src/new_new_js/modelParsing/deleteParamFromString.js"></script>
+    <script src="../../src/new_new_js/modelParsing/returnParamFromString.js"></script>
+
+    <script src="../../src/new_new_js/isDescendant.js"></script>
+    <script src="../../src/new_new_js/merge.js"></script>
+    <script src="../../src/new_new_js/offset.js"></script>
+    <script src="../../src/new_new_js/defaults.js"></script>
+    <script src="../../src/new_new_js/iteration.js"></script>
+    <script src="../../src/new_new_js/dataType.js"></script>
+    <script src="../../src/new_new_js/main.js"></script>
+    <script src="../../src/new_new_js/template.js"></script>
+
+
+
+<script>
+    var contentEditable = {
+        add : true,
+        delete : true,
+        key : true,
+        value:true,
+        selection : false,
+        drag : true,
+        type : true
+    };
+    var iterateNodeObj;
+    var inputElement = document.getElementById("inputFiles");
+    inputElement.addEventListener("change", handleFiles, false);
+    function handleFiles() {
+        var fileList = this.files;
+        var reader = new FileReader();
+        reader.onload = function(res){
+                if(iterateNodeObj)
+                    iterateNodeObj.destroy();
+                var json = JSON.parse(res.target.result);
+                document.getElementById("iterateNode-obj").innerHTML = "";
+                iterateNodeObj = new iterateNode(document.getElementById("iterateNode-obj"),json,{contentEditable:contentEditable});
+        };
+        reader.readAsText(fileList[0]);
+    }
+    function createNew(){
+        if(iterateNodeObj)
+            iterateNodeObj.destroy();
+        document.getElementById("iterateNode-obj").innerHTML = "";
+        iterateNodeObj = new iterateNode(document.getElementById("iterateNode-obj"),{},{contentEditable:contentEditable});
+    }
+</script>
+</body>
+</html>

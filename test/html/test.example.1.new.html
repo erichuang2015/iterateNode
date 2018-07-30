@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>test.example.1</title>
+    <!--
+    <style>
+        .iterate-node__caret {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin-left: 2px;
+            vertical-align: middle;
+            border-top: 4px dashed;
+            border-right: 4px solid transparent;
+            border-left: 4px solid transparent;
+        }
+        .iterateNode-obj .iterate-node__caret{
+            -ms-transform: rotate(-90deg); /* IE 9 */
+            -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
+            transform: rotate(-90deg);
+        }
+        .iterateNode-obj .iterate-node__caret.open{
+            -ms-transform: rotate(0deg); /* IE 9 */
+            -webkit-transform: rotate(0deg); /* Chrome, Safari, Opera */
+            transform: rotate(0deg);
+        }
+        ul{
+            list-style:none;
+        }
+        li{
+            float:left;
+            margin:5px 0;
+            width:100%;
+        }
+        li span{
+            display:inline-block;
+            float:left;
+        }
+        li .iterate-node__caret.open ~ ul{
+            display:block;
+        }
+        li .iterate-node__caret ~ ul{
+            display:none;
+        }
+    </style>
+    -->
+    <link href="../../src/css/iterateNode-layout-3.css" rel="stylesheet">
+</head>
+<body>
+<input type="file" id="inputFiles">
+    <div id="iterateNode-obj">
+
+    </div>
+<script src="../../src/new_new_js/innerElements/spanForDrag.js"></script>
+<script src="../../src/new_new_js/innerElements/spanCaret.js"></script>
+<script src="../../src/new_new_js/innerElements/spanAddItem.js"></script>
+<script src="../../src/new_new_js/innerElements/spanElementDelete.js"></script>
+<script src="../../src/new_new_js/innerElements/spanForKey.js"></script>
+<script src="../../src/new_new_js/innerElements/spanForTypeof.js"></script>
+<script src="../../src/new_new_js/innerElements/spanSeparator.js"></script>
+<script src="../../src/new_new_js/innerElements/spanValue.js"></script>
+<script src="../../src/new_new_js/innerElements/elementRoot.js"></script>
+
+<script src="../../src/new_new_js/events/addElement.js"></script>
+<script src="../../src/new_new_js/events/changeKeyOrValue.js"></script>
+<script src="../../src/new_new_js/events/changeType.js"></script>
+<script src="../../src/new_new_js/events/openObject.js"></script>
+<script src="../../src/new_new_js/events/removeElement.js"></script>
+<script src="../../src/new_new_js/events/dragging.js"></script>
+
+<script src="../../src/new_new_js/modelParsing/assignParamFromString.js"></script>
+<script src="../../src/new_new_js/modelParsing/assignKeyFromString.js"></script>
+<script src="../../src/new_new_js/modelParsing/createKeyFromString.js"></script>
+<script src="../../src/new_new_js/modelParsing/deleteParamFromString.js"></script>
+<script src="../../src/new_new_js/modelParsing/returnParamFromString.js"></script>
+
+<script src="../../src/new_new_js/isDescendant.js"></script>
+<script src="../../src/new_new_js/merge.js"></script>
+<script src="../../src/new_new_js/offset.js"></script>
+<script src="../../src/new_new_js/defaults.js"></script>
+<script src="../../src/new_new_js/iteration.js"></script>
+<script src="../../src/new_new_js/dataType.js"></script>
+<script src="../../src/new_new_js/main.js"></script>
+<script src="../../src/new_new_js/template.js"></script>
+
+<script>
+    var inputElement = document.getElementById("inputFiles");
+    inputElement.addEventListener("change", handleFiles, false);
+    function handleFiles() {
+        var fileList = this.files;
+        var reader = new FileReader();
+        reader.onload = function(res){
+                var json = JSON.parse(res.target.result);
+                document.getElementById("iterateNode-obj").innerHTML = "";
+                MAIN(document.getElementById("iterateNode-obj"),json,{});
+        };
+        reader.readAsText(fileList[0]);
+    }
+</script>
+</body>
+</html>

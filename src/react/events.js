@@ -58,7 +58,8 @@ export class Events {
                 }
             }
             // open the caret
-            if( !e.target.parentNode.querySelector('.caret').classList.contains('open') )
+            var caret = e.target.parentNode.querySelector('.caret');
+            if( caret && !caret.classList.contains('open') )
                 e.target.parentNode.querySelector('.caret').click();
 
             changeModel.createKeyFromString(treeKey, instance, "newItem" + ( number + 1 ), "value");
