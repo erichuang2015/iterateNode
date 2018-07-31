@@ -11,7 +11,6 @@ function merge(add,base,extension) {
         else
             target[i] = add[i] || base[i];
     }
-    // TODO Permit add keys to be included in target object
     if ( extension ){
         for (var k in add){
             target[k] = target[k] || add[k];

@@ -47,3 +47,15 @@ var iterateNodeDataTypes = {
         }
     }
 };
+//render in select
+function returnDataTypes(elem){
+
+    var select = document.createElement("select");
+    select.classList.add("iterate-node__hide");
+    for(var k in iterateNodeDataTypes){
+        var option = document.createElement("option");
+        option.value = k;
+        select.options.add(new Option(iterateNodeDataTypes[k].label, k));
+    }
+    return select;
+}
