@@ -10,5 +10,16 @@ var defaults = {
         type : false
     },
     appendElements : {},
-    renderChildren : false
+    map : false,
+    dataKeyOnDOM : '__iterate-node-data__'
 };
+
+var methods = {
+    addElement : addElement,
+    changeKeyOrValue : changeKeyOrValue,
+    changeType : changeType,
+    deleteElement : deleteElement,
+    openObject : openObject,
+    iteration : ITERATION,
+    template : TEMPLATE
+}

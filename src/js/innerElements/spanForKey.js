@@ -1,12 +1,12 @@
-function spanForKey(templateGlobals) {
+function spanForKey(li,key,parentElement,typeNode) {
     /* span for key */
     var keyElem = document.createElement("span");
     keyElem.classList.add("iterate-node__key");
-    keyElem.innerText = templateGlobals.key;
-    // if editable, adding contenteditable and event
-    if (this.options.contentEditable.key && !Array.isArray(templateGlobals.parent)) {
+    keyElem.innerText = key;
+    // if editable, adding contenteditable and correlate event
+    if (defaults.contentEditable.key && !Array.isArray(parentElement)) {
         keyElem.setAttribute("contenteditable","true");
-        keyElem.addEventListener("blur", changeKeyOrValue.bind(this, templateGlobals,true));
+        keyElem.addEventListener("blur", changeKeyOrValue.bind(null,li,typeNode,true));
     }
-    templateGlobals.li.appendChild(keyElem);
+    li.appendChild(keyElem);
 }

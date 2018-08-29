@@ -10,7 +10,7 @@ function dragging(HandlerEl) {
         }
         var highlight = document.querySelector(".iterate-node__drag-position");
         if(!highlight) {
-            var highlight = document.createElement("div");
+            highlight = document.createElement("div");
             highlight.classList.add("iterate-node__drag-position");
             document.body.appendChild(highlight);
         }
@@ -21,12 +21,15 @@ function dragging(HandlerEl) {
                 || !isDescendant(HandlerEl,e.target))
                 return;
             dragging = true;
-            var key = e.target.parentElement;
-            var clone = e.target.parentElement.cloneNode(true);
+            var li = e.target.parentElement;
+            var clone = li.cloneNode(true);
             if(clone.querySelector("ul") ) clone.removeChild(clone.querySelector("ul"));
-            cloneNodes.push(clone);
+            cloneNodes.push({
+                original : li,
+                clone : clone
+            });
             for(var k in cloneNodes)
-                dummy.appendChild(cloneNodes[k]);
+                dummy.appendChild(cloneNodes[k].clone);
             dummy.style.transform = "translate(" + e.x + "px," + e.y + "px)";
         }
         function Move(e){
@@ -35,26 +38,19 @@ function dragging(HandlerEl) {
                 return;
 
             target = e.target;
-            targetLi = e.target.hasAttribute("data-iterate-node-path") ?
-                e.target :
-                ( e.target.parentElement.hasAttribute("data-iterate-node-path") ?
-                    e.target.parentElement :
-                false);
+            var targetNodeName = target.nodeName.toLowerCase();
+            var parentNodeName = target.parentElement.nodeName.toLowerCase();
+            targetLi = targetNodeName == "li" ?
+                target :
+                ( parentNodeName == "li" ?
+                    target.parentElement :
+                    false);
             if(!targetLi)
                 return;
 
-            targetType = targetLi.getAttribute("data-iterate-node-path") == "" ?
-                "[object Object]" :
-                targetLi.querySelector(".iterate-node__type-node").innerText;
-
             var height = 0;
-            if(((targetType == "[object Array]" || targetType == "[object Object]") &&
-                target.nodeName.toLowerCase() == "ul") ||
-                targetLi.classList.contains("iterate-node__root")){
+            if( targetNodeName == "ul"){
                 var caret = targetLi.querySelector('.iterate-node__caret');
-                if(caret && caret.parentElement == targetLi  && !caret.classList.contains('open')){
-                    caret.click();
-                }
                 height = targetLi.offsetHeight;
             }
             dummy.style.transform = "translate(" + (e.x + 1) + "px," + (e.y +1) + "px)";
@@ -63,26 +59,26 @@ function dragging(HandlerEl) {
             highlight.style.transform = "translate(0," + ( position.top + height ) + "px)";
         }
         function Up(e){
-            if(!dragging)
+            if(!dragging )
                 return;
-            if(isDescendant(HandlerEl,e.target))
+            if(isDescendant(HandlerEl,e.target) && targetLi)
                 for(var k in cloneNodes) {
-                    var path = cloneNodes[k].getAttribute("data-iterate-node-path");
-                    var targetLiAttr = targetLi.getAttribute("data-iterate-node-path");
-                    var originalObjectToDrag = $super.targetElement.querySelector("[data-iterate-node-path='" + path + "']");
-                    if(path == targetLiAttr  || isDescendant(originalObjectToDrag,targetLi))
+                    var original = cloneNodes[k].original;
+                    if(original == targetLi  || isDescendant(original,targetLi))
                         continue;
-                    var JSel = JSON.parse(JSON.stringify($super.returnParamFromString(path)));
-                    var key = cloneNodes[k].querySelector(".iterate-node__key").innerText;
-                    $super.deleteParamFromString(path);
-                    if(target.nodeName.toLowerCase() == "ul" ||
-                        targetLi.classList.contains("iterate-node__root")) {
-                        var elm = $super.returnParamFromString(targetLiAttr);
-                        var keyCreate = Array.isArray(elm) ? elm.length : key;
-                        $super.createKeyFromString(targetLiAttr,keyCreate, JSel);
-                    }
-                    else
-                        $super.assignKeyFromString(targetLiAttr,key,JSel,0);
+
+                    var key = original[defaults.dataKeyOnDOM].key;
+                    deleteElement(original);
+                    var value = original[defaults.dataKeyOnDOM].value;
+                    var liToPrepend = target.nodeName.toLowerCase() == "ul" ?
+                        false :
+                        targetLi;
+                    var li = typeof targetLi[defaults.dataKeyOnDOM].key === "undefined" ||
+                        target.nodeName.toLowerCase() == "ul" ?
+                        targetLi :
+                        targetLi.parentElement.parentElement;
+
+                    addElement(li,liToPrepend,value,key,original);
 
                 }
             dragging = false;
@@ -92,6 +88,7 @@ function dragging(HandlerEl) {
             highlight.style.transform = "translate(-9999px,-9999px)";
         }
 
+        // TO DO : MOVE IN A SEPARATE FILE ( CORE FUNCTIONALITY OF MANY ELEMENTS )
         // desktop case
         var desktop = function(){
             function mousedown(e){
@@ -138,6 +135,8 @@ function dragging(HandlerEl) {
                     target : e.target
                 };
                 Down(ev);
+                document.addEventListener('touchend', touchend,false);
+                document.addEventListener('touchmove', touchend,false);
             }
 
             // listeners
@@ -150,7 +149,6 @@ function dragging(HandlerEl) {
                 };
                 Move(ev);
             }
-            document.addEventListener('touchmove',touchmove,{passive:true});
             function touchend(e){
                 var ev = {
                     x : e.changedTouches[0].pageX,
@@ -158,12 +156,12 @@ function dragging(HandlerEl) {
                     target : e.target
                 };
                 Up(ev);
-            }
-            document.addEventListener('touchend', touchend,false);
-            $super.destroy = function(){
-                HandlerEl.removeEventListener('touchstart', touchstart);
                 document.removeEventListener('touchend', touchend);
                 document.removeEventListener('touchmove',touchmove,{passive:false});
+            }
+
+            $super.destroy = function(){
+                HandlerEl.removeEventListener('touchstart', touchstart);
             }
         };
 

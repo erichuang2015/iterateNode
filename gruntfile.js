@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-    var pkg = grunt.file.readJSON('bower.json');
+    var pkg = grunt.file.readJSON('properties.json');
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,

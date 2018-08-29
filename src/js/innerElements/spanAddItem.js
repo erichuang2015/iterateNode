@@ -1,7 +1,9 @@
-function spanAddItem(templateGlobals) {
+function spanAddItem(li,obj) {
     var add = document.createElement("span");
     add.classList.add("iterate-node__add-item");
-    add.innerText = "+";
-    add.addEventListener("click", addElement.bind(this, templateGlobals));
-    templateGlobals.li.appendChild(add);
+    add.textContent = "+";
+    add.addEventListener("click", function(e){
+        addElement(li,null,null,undefined,null)
+    });
+    li.appendChild(add);
 }

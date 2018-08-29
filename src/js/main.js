@@ -1,21 +1,17 @@
-function iterateNode(targetElement,obj,settings) {
+function iterateNode(targetElement,settings) {
     var $self = this;
-    $self.state = obj;
-    $self.targetElement = targetElement;
-    $self.assignParamFromString = assignParamFromString;
-    $self.assignKeyFromString = assignKeyFromString;
-    $self.createKeyFromString = createKeyFromString;
-    $self.deleteParamFromString = deleteParamFromString;
-    $self.returnParamFromString = returnParamFromString;
-    var options = $self.options = settings ? merge(settings,defaults,true) : defaults;
-    var DOMrepresentation = ITERATION.call($self, obj, "", options);
-    var rootRepresentation = elementRoot.call($self);
+    defaults = $self.defaults =
+        settings ? merge(settings,defaults,true) : defaults;
+    $self.state = defaults.obj;
+    $self.methods = methods;
+    var DOMrepresentation = ITERATION(defaults.obj);
+    var rootRepresentation = elementRoot(defaults.obj);
     rootRepresentation.children[0].appendChild(DOMrepresentation);
     targetElement.className += " iterateNode-obj";
     targetElement.appendChild(rootRepresentation);
 
-    if( options.contentEditable.drag )
+    if( defaults.contentEditable.drag )
         dragging.call(this,targetElement);
 
-    return this;
+    return $self;
 };

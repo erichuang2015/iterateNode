@@ -1,21 +1,17 @@
-function elementRoot(){
-    var options = this.options;
-    var $this = this;
-    var path = "";
-    var typeNode = Object.prototype.toString.call({});
-    var templateGlobals = {
-        path : path,
-        typeNode : typeNode,
-        value : this.state
-    };
-
+function elementRoot(obj){
     /* main LI */
     var ul = document.createElement("ul");
-    var li = templateGlobals.li = document.createElement("li");
-    li.setAttribute("data-iterate-node-path","");
-    li.classList.add("iterate-node__root");
-    if (options.contentEditable.add) {
-        spanAddItem.call($this,templateGlobals);
+    var li = document.createElement("li");
+
+    var renderObj = defaults.map ? defaults.map(obj) : obj;
+    li[defaults.dataKeyOnDOM] = {
+        value : renderObj,
+        alias : obj
+    };
+    if (defaults.alias)
+        spanAlias(li,defaults.alias(obj));
+    if (defaults.contentEditable.add) {
+        spanAddItem(li);
     }
     ul.appendChild(li);
     return ul;

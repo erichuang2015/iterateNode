@@ -1,10 +1,11 @@
-function spanValue(templateGlobals) {
+function spanValue(li,value,typeNode) {
     var valueElem = document.createElement("span");
     valueElem.classList.add("iterate-node__value");
-    valueElem.innerText = "" + templateGlobals.value;
-    if (this.options.contentEditable.value) {
+    valueElem.textContent = "" + value;
+    if (defaults.contentEditable.value) {
         valueElem.setAttribute("contenteditable","true");
-        valueElem.addEventListener("blur", changeKeyOrValue.bind(this, templateGlobals,false));
+        valueElem.addEventListener("blur",
+            changeKeyOrValue.bind(null,li,typeNode,false))
     }
-    templateGlobals.li.appendChild(valueElem);
+    li.appendChild(valueElem);
 }

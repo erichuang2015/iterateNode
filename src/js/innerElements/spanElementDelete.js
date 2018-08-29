@@ -1,6 +1,7 @@
-function spanElementDelete(templateGlobals) {
+function spanElementDelete(li) {
         var deleteElem = document.createElement("span");
         deleteElem.innerText = "-";
-        deleteElem.addEventListener("click", removeElement.bind(this, templateGlobals));
-        templateGlobals.li.appendChild(deleteElem);
+        deleteElem.addEventListener("click",
+            deleteElement.bind(null,li));
+        li.appendChild(deleteElem);
 }
