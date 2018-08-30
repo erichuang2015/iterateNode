@@ -1,7 +1,7 @@
 {
   "name": "iterate-node",
   "description": "iterateNode node package",
-  "version": "0.3.0",
+  "version": "0.3.7",
   "repository": "https://github.com/SimonSavage/iterateNode",
   "author": {
     "name": "Simone Di Nuovo",
@@ -13,6 +13,12 @@
     "js-object",
     "JSON-viewer",
     "js-object-viewer"
+  ],
+  "files" : [
+    "dist/iterateNode.min.css",
+    "dist/iterateNode.min.css.map",
+    "dist/iterateNode.min.js",
+    "dist/iterateNode.min.js.map"
   ],
   "devDependencies": {
     "grunt": "^0.4.5",
@@ -31,7 +37,6 @@
   "scripts": {
     "build-new": "grunt"
   },
-  "install": "node ./installation",
   "dependencies": {
     "karma-spec-reporter": "0.0.32"
   }
