@@ -1,8 +1,19 @@
 {
   "name": "iterate-node",
   "description": "iterateNode node package",
-  "version": "0.0.1",
+  "version": "0.3.0",
   "repository": "https://github.com/SimonSavage/iterateNode",
+  "author" :{
+    "name" : "Simone Di Nuovo",
+    "email" : "dinuovos@gmail.com"
+  },
+  "keywords": [
+    "html",
+    "JSON",
+    "js-object",
+    "JSON-viewer",
+    "js-object-viewer"
+  ],
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-contrib-concat": "^0.5.0",
@@ -18,8 +29,9 @@
     "karma-phantomjs-launcher": "^1.0.4"
   },
   "scripts": {
-    "build-new": "babel src/new_js -d lib/new_js"
+    "build-new": "grunt"
   },
+  "install" : "node ./installation",
   "dependencies": {
     "karma-spec-reporter": "0.0.32"
   }

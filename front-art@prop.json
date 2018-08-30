@@ -1,0 +1,16 @@
+{
+  "name": "iterateNode",
+  "description": "Convert JS object and JSON to html unorder list",
+  "version": "0.0.1",
+  "keywords": [
+    "html",
+    "JSON",
+    "js-object",
+    "JSON-viewer",
+    "js-object-viewer"
+  ],
+  "main": [
+    "dist/iterateNode.css",
+    "dist/iterateNode.min.js"
+  ]
+}
