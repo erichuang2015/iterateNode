@@ -4,7 +4,8 @@ function ITERATION (obj,callback) {
         defaults.map(obj,function(newObj){
             for (var k in newObj) {
                 DOMrepresentation.appendChild(
-                    TEMPLATE(k,newObj[k].value, newObj,newObj[k].alias));
+                    TEMPLATE(newObj.key || k,
+                        newObj[k].value, newObj,newObj[k].alias));
             }
         });
         callback(DOMrepresentation)
