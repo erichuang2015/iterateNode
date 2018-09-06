@@ -1,18 +1,25 @@
 module.exports = function(grunt) {
-    var pkg = grunt.file.readJSON('properties.json');
+    var pkg = grunt.file.readJSON('package.json');
     // Project configuration.
     grunt.initConfig({
         pkg: pkg,
-        files: "<%= pkg.gruntFiles %>",
+        files: {
+            "js": {
+                "dist/iterateNode.js": ["src/js/**/*.js"]
+            },
+            "css":{
+                "dist/iterateNode.css": "src/css/iterateNode-layout-3.css"
+            }
+        },
         uglify: {
             options: {
-                banner: "/* <%= pkg.name %><%= pkg.version %> <%= grunt.template.today('yyyy-mm-dd') %> */\n",
+                banner: "/* iterateNode<%= pkg.version %> <%= grunt.template.today('yyyy-mm-dd') %> */\n",
                 sourceMap: true,
-                sourceMapName: "dist/<%= pkg.name %>.min.js.map"
+                sourceMapName: "dist/iterateNode.min.js.map"
             },
             js: {
-                src: "dist/<%= pkg.name %>.js",
-                dest: "dist/<%= pkg.name %>.min.js"
+                src: "dist/iterateNode.js",
+                dest: "dist/iterateNode.min.js"
             }
         },
         concat: {
@@ -20,12 +27,16 @@ module.exports = function(grunt) {
                 options: {
                     //stripBanners: true,
                     banner: "(function(){\n",
-                    footer: "\nwindow.<%= pkg.name %> = <%= pkg.name %>;\n})();"
+                    footer: "\nwindow.iterateNode = iterateNode;\n})();"
                 },
-                files: pkg.gruntFiles.js
+                files: {
+                    "dist/iterateNode.js": ["src/js/**/*.js"]
+                }
             },
             css:{
-                files: pkg.gruntFiles.css
+                files: {
+                    "dist/iterateNode.css": "src/css/iterateNode-layout-3.css"
+                }
             }
         },
         cssmin: {
@@ -39,7 +50,7 @@ module.exports = function(grunt) {
             },
             target: {
                 files: {
-                    "dist/<%= pkg.name %>.min.css" : ["dist/<%= pkg.name %>.css"]
+                    "dist/iterateNode.min.css" : ["dist/iterateNode.css"]
                 }
             }
         }

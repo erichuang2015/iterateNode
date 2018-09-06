@@ -135,10 +135,14 @@ function dragging(HandlerEl) {
             if(!targetLi)
                 return;
 
+            if(document.querySelector("ul.iterate-node__enlight-ul"))
+                document.querySelector("ul.iterate-node__enlight-ul").classList.remove("iterate-node__enlight-ul");
+
             var height = 0;
             if( targetNodeName == "ul"){
                 var caret = targetLi.querySelector('.iterate-node__caret');
                 height = targetLi.offsetHeight;
+                target.classList.add("iterate-node__enlight-ul");
             }
             dummy.style.transform = "translate(" + (e.x + 1) + "px," + (e.y +1) + "px)";
             var position = offset(targetLi);
@@ -155,8 +159,8 @@ function dragging(HandlerEl) {
                         continue;
 
                     var key = original[defaults.dataKeyOnDOM].key;
-                    deleteElement(original);
                     var value = original[defaults.dataKeyOnDOM].value;
+                    deleteElement(original);
                     var liToPrepend = target.nodeName.toLowerCase() == "ul" ?
                         false :
                         targetLi;
@@ -168,9 +172,13 @@ function dragging(HandlerEl) {
                     addElement(li,liToPrepend,value,key,original);
 
                 }
+            if(document.querySelector("ul.iterate-node__enlight-ul"))
+                document.querySelector("ul.iterate-node__enlight-ul").classList.remove("iterate-node__enlight-ul");
+
             dragging = false;
             dummy.innerHTML = "";
             cloneNodes = [];
+            targetLi = null;
             dummy.style.transform = "translate(-9999px,-9999px)";
             highlight.style.transform = "translate(-9999px,-9999px)";
         }
@@ -185,6 +193,8 @@ function dragging(HandlerEl) {
                     target : e.target
                 };
                 Down(ev);
+                document.addEventListener("mouseup",mouseup);
+                document.addEventListener('mousemove',mousemove);
             }
             HandlerEl.addEventListener("mousedown",mousedown);
             function mouseup(e){
@@ -194,8 +204,10 @@ function dragging(HandlerEl) {
                     target : e.target
                 };
                 Up(ev);
+                document.removeEventListener("mouseup",mouseup);
+                document.removeEventListener('mousemove',mousemove);
             }
-            document.addEventListener("mouseup",mouseup);
+
             function mousemove(e){
                 var ev = {
                     x : e.pageX,
@@ -204,11 +216,9 @@ function dragging(HandlerEl) {
                 };
                 Move(ev);
             }
-            document.addEventListener('mousemove',mousemove);
+
             $super.destroy = function(){
                 HandlerEl.removeEventListener("mousedown",mousedown);
-                document.removeEventListener("mouseup",mouseup);
-                document.removeEventListener('mousemove',mousemove);
             }
         };
 
@@ -223,7 +233,7 @@ function dragging(HandlerEl) {
                 };
                 Down(ev);
                 document.addEventListener('touchend', touchend,false);
-                document.addEventListener('touchmove', touchend,false);
+                document.addEventListener('touchmove', touchmove,false);
             }
 
             // listeners
@@ -259,30 +269,36 @@ function dragging(HandlerEl) {
         else
             desktop();
 }
-function elementRoot(obj){
+function elementRoot(obj,cb){
     /* main LI */
     var ul = document.createElement("ul");
     var li = document.createElement("li");
 
-    var renderObj = defaults.map ? defaults.map(obj) : obj;
-    li[defaults.dataKeyOnDOM] = {
-        value : renderObj,
-        alias : obj
-    };
-    if (defaults.alias)
-        spanAlias(li,defaults.alias(obj));
-    if (defaults.contentEditable.add) {
-        spanAddItem(li);
+    if(defaults.map)
+        defaults.map(obj,eR);
+    else
+        eR(obj);
+
+    function eR(renderObj) {
+        li[defaults.dataKeyOnDOM] = {
+            value: renderObj,
+            alias: obj
+        };
+        if (defaults.alias)
+            spanAlias(li, defaults.alias(obj));
+        if (defaults.contentEditable.add) {
+            spanAddItem(li);
+        }
+        ul.appendChild(li);
+        cb(ul);
     }
-    ul.appendChild(li);
-    return ul;
 }
 function spanAddItem(li,obj) {
     var add = document.createElement("span");
     add.classList.add("iterate-node__add-item");
     add.textContent = "+";
     add.addEventListener("click", function(e){
-        addElement(li,null,null,undefined,null)
+        addElement(e.target.parentElement,null,null,undefined,null)
     });
     li.appendChild(add);
 }
@@ -301,9 +317,11 @@ function spanCaret(li) {
 }
 function spanElementDelete(li) {
         var deleteElem = document.createElement("span");
+        deleteElem.className = "iterate-node__delete-item";
         deleteElem.innerText = "-";
-        deleteElem.addEventListener("click",
-            deleteElement.bind(null,li));
+        deleteElem.addEventListener("click",function(e) {
+            deleteElement(e.target.parentElement);
+        });
         li.appendChild(deleteElem);
 }
 function spanForDrag(li) {
@@ -321,7 +339,7 @@ function spanForKey(li,key,parentElement,typeNode) {
     // if editable, adding contenteditable and correlate event
     if (defaults.contentEditable.key && !Array.isArray(parentElement)) {
         keyElem.setAttribute("contenteditable","true");
-        keyElem.addEventListener("blur", changeKeyOrValue.bind(null,li,typeNode,true));
+        keyElem.addEventListener("blur", changeKeyOrValue.bind(null,true));
     }
     li.appendChild(keyElem);
 }
@@ -347,14 +365,14 @@ function spanSeparator(li) {
     spanSeparator.classList.add("iterate-node__separator");
     li.appendChild(spanSeparator);
 }
-function spanValue(li,value,typeNode) {
+function spanValue(li,value) {
     var valueElem = document.createElement("span");
     valueElem.classList.add("iterate-node__value");
     valueElem.textContent = "" + value;
     if (defaults.contentEditable.value) {
         valueElem.setAttribute("contenteditable","true");
         valueElem.addEventListener("blur",
-            changeKeyOrValue.bind(null,li,typeNode,false))
+            changeKeyOrValue.bind(null,false))
     }
     li.appendChild(valueElem);
 }
@@ -374,15 +392,17 @@ function iterateNode(targetElement,settings) {
         settings ? merge(settings,defaults,true) : defaults;
     $self.state = defaults.obj;
     $self.methods = methods;
-    var DOMrepresentation = ITERATION(defaults.obj);
-    var rootRepresentation = elementRoot(defaults.obj);
-    rootRepresentation.children[0].appendChild(DOMrepresentation);
-    targetElement.className += " iterateNode-obj";
-    targetElement.appendChild(rootRepresentation);
+    ITERATION(defaults.obj,function(DOMrepresentation){
+            elementRoot(defaults.obj,function(rootRepresentation){
+                rootRepresentation.children[0].appendChild(DOMrepresentation);
+                targetElement.className += " iterateNode-obj";
+                targetElement.appendChild(rootRepresentation);
 
-    if( defaults.contentEditable.drag )
-        dragging.call(this,targetElement);
+                if( defaults.contentEditable.drag )
+                    dragging.call($self,targetElement);
 
+            })
+    });
     return $self;
 };
 /**
@@ -468,6 +488,8 @@ function addElement(li,liToPrepend,value,key,liToClone,alias){
             key = "newItem" + ( number + 1 );
         }
         else {
+            //coerce key to string
+            key = typeof key === "number" ? "0" + key : key;
             while (Object.keys(elm).indexOf(key) > -1)
                 key = key + Math.floor(Math.random() * (9007199254740991));
 
@@ -478,22 +500,20 @@ function addElement(li,liToPrepend,value,key,liToClone,alias){
         }
         // insertment
         if(liToPrepend) {
-            var keyToPrepend = liToPrepend[defaults.dataKeyOnDOM].key;
-            var temp = JSON.parse(JSON.stringify(elm));
-            for (var OldesKey in elm)
-                delete elm[OldesKey];
-            for (var copyKey in temp) {
-                if (copyKey == keyToPrepend) {
-                    elm[key] = value;
-                    elm[copyKey] = temp[copyKey];
-                }
-                else
-                    elm[copyKey] = temp[copyKey];
+            prependObjectElement(elm, key,
+                value, liToPrepend[defaults.dataKeyOnDOM].key);
+            var children = container.children;
+            for(var ch = 0;ch<children.length;ch++) {
+                var chi = children[ch][defaults.dataKeyOnDOM];
+                chi.value = elm[chi.key];
+                chi.parentElement = elm;
             }
+
         }
         else
             elm[key] = value;
     }
+
     if(liToClone)
         liToClone[defaults.dataKeyOnDOM].parentElement = elm;
 
@@ -513,19 +533,38 @@ function addElement(li,liToPrepend,value,key,liToClone,alias){
         li[defaults.dataKeyOnDOM],
         liToPrepend ? liToPrepend[defaults.dataKeyOnDOM] : false);
 }
-function changeKeyOrValue(li,typeNode,isKey,e) {
+function changeKeyOrValue(isKey,e) {
     var thisTarget = e.target;
-    var parentElement = li.parentElement.parentElement[defaults.dataKeyOnDOM].value;
+    var li = thisTarget.parentElement;
+    var oldKey = li[defaults.dataKeyOnDOM].key;
+    var oldValue = li[defaults.dataKeyOnDOM].value;
+    var typeNode = Object.prototype.toString.call(oldValue);
+    var parentElement = li[defaults.dataKeyOnDOM].parentElement;
     var innerText = thisTarget.innerText;
+
     if(isKey) {
+        if(innerText == oldKey)
+            return;
         while (Object.keys(parentElement).indexOf(innerText) > -1)
             innerText = innerText + Math.floor(Math.random() * (9007199254740991));
 
+        var nextElement = li.nextElementSibling;
         li[defaults.dataKeyOnDOM].key = innerText;
         thisTarget.innerText = innerText;
+        if(nextElement) {
+            prependObjectElement(parentElement, innerText,
+                oldValue, nextElement[defaults.dataKeyOnDOM].key);
+            delete parentElement[oldKey];
+        }
+        else {
+            delete parentElement[oldKey];
+            parentElement[innerText] = li[defaults.dataKeyOnDOM].value;
+        }
         defaults.changeKeyListener && defaults.changeKeyListener(li[defaults.dataKeyOnDOM]);
     }
     else{
+        if(innerText == oldValue)
+            return;
         // number sanitation
         switch(typeNode) {
             case ("[object Number]") :
@@ -537,10 +576,17 @@ function changeKeyOrValue(li,typeNode,isKey,e) {
                 // boolean : if is not 'true', then is false
                 innerText = ( innerText.toLowerCase() == "true" );
                 break;
+            case ("[object Null]") :
+                thisTarget.innerText = "" + null;
+                return;
+                break;
             default:
                 break;
         }
+
+        parentElement[oldKey] = innerText;
         li[defaults.dataKeyOnDOM].value = innerText;
+        thisTarget.innerText = innerText;
         defaults.changeValueListener && defaults.changeValueListener(li[defaults.dataKeyOnDOM]);
     }
 }
@@ -552,19 +598,20 @@ function changeTypeEnable(e){
 function changeType(e){
     var li = e.target.parentElement;
     var key = li[defaults.dataKeyOnDOM].key;
-    var parent = li.parentElement.parentElement[defaults.dataKeyOnDOM].value;
+    var parent = li[defaults.dataKeyOnDOM].parentElement;
     var newValue = iterateNodeDataTypes[e.target.value].converter();
+    var newLi = TEMPLATE(key,newValue,parent);
     li.parentElement.replaceChild(
-        TEMPLATE(key,newValue,parent),
+        newLi,
         li
     );
-    li[defaults.dataKeyOnDOM].value = newValue;
+    //li[defaults.dataKeyOnDOM].value = newValue;
     parent[key] = newValue;
-    defaults.changeTypeListener && defaults.changeTypeListener(li[defaults.dataKeyOnDOM]);
+    defaults.changeTypeListener && defaults.changeTypeListener(newLi[defaults.dataKeyOnDOM]);
 }
 
 function deleteElement(li){
-    var parentElm = li[defaults.dataKeyOnDOM].parentElement;
+    var parentElm = li.parentElement.parentElement[defaults.dataKeyOnDOM].value;
     var keyElm = li[defaults.dataKeyOnDOM].key;
     if(Array.isArray(parentElm)) {
         var parentElement = li.parentElement;
@@ -579,24 +626,29 @@ function deleteElement(li){
     }
     else
         delete parentElm[keyElm];
+
     defaults.removeElementListener && defaults.removeElementListener(li[defaults.dataKeyOnDOM]);
     li.parentElement.removeChild(li);
 }
-function ITERATION (obj) {
+function ITERATION (obj,callback) {
     var DOMrepresentation = document.createElement("ul");
     if(defaults.map) {
-        var newObj = defaults.map(obj);
-        for (var k in newObj) {
-            DOMrepresentation.appendChild(
-                TEMPLATE(k,newObj[k].value, newObj,newObj[k].alias));
-        }
+        defaults.map(obj,function(newObj){
+            for (var k in newObj) {
+                DOMrepresentation.appendChild(
+                    TEMPLATE(k,newObj[k].value, newObj,newObj[k].alias));
+            }
+        });
+        callback(DOMrepresentation)
     }
-    else
+    else {
         for (var k in obj) {
             DOMrepresentation.appendChild(TEMPLATE(k, obj[k], obj));
         }
+        callback(DOMrepresentation);
+    }
 
-    return DOMrepresentation;
+
 }
 function openObject(e){
         var target = e.target;
@@ -604,11 +656,25 @@ function openObject(e){
         var ul = li.querySelector("ul");
         if (!ul){
             var newObj= li[defaults.dataKeyOnDOM].value;
-            var newUl = ITERATION(newObj);
-            li.appendChild(newUl);
+            ITERATION(newObj,function(newUl){
+                li.appendChild(newUl);
+            });
         }
 
         target.classList.toggle('open');
+}
+function prependObjectElement(elm,key,value,keyToPrepend) {
+    var temp = JSON.parse(JSON.stringify(elm));
+    for (var OldesKey in elm)
+        delete elm[OldesKey];
+    for (var copyKey in temp) {
+        if (copyKey == keyToPrepend) {
+            elm[key] = value;
+            elm[copyKey] = temp[copyKey];
+        }
+        else
+            elm[copyKey] = temp[copyKey];
+    }
 }
 function TEMPLATE (key,value,parentElement,alias){
     var typeNode = Object.prototype.toString.call(value);

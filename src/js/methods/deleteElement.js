@@ -1,5 +1,5 @@
 function deleteElement(li){
-    var parentElm = li[defaults.dataKeyOnDOM].parentElement;
+    var parentElm = li.parentElement.parentElement[defaults.dataKeyOnDOM].value;
     var keyElm = li[defaults.dataKeyOnDOM].key;
     if(Array.isArray(parentElm)) {
         var parentElement = li.parentElement;
@@ -14,6 +14,7 @@ function deleteElement(li){
     }
     else
         delete parentElm[keyElm];
+
     defaults.removeElementListener && defaults.removeElementListener(li[defaults.dataKeyOnDOM]);
     li.parentElement.removeChild(li);
 }

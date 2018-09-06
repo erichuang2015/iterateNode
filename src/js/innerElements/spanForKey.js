@@ -6,7 +6,7 @@ function spanForKey(li,key,parentElement,typeNode) {
     // if editable, adding contenteditable and correlate event
     if (defaults.contentEditable.key && !Array.isArray(parentElement)) {
         keyElem.setAttribute("contenteditable","true");
-        keyElem.addEventListener("blur", changeKeyOrValue.bind(null,li,typeNode,true));
+        keyElem.addEventListener("blur", changeKeyOrValue.bind(null,true));
     }
     li.appendChild(keyElem);
 }

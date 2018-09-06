@@ -1,16 +1,20 @@
-function ITERATION (obj) {
+function ITERATION (obj,callback) {
     var DOMrepresentation = document.createElement("ul");
     if(defaults.map) {
-        var newObj = defaults.map(obj);
-        for (var k in newObj) {
-            DOMrepresentation.appendChild(
-                TEMPLATE(k,newObj[k].value, newObj,newObj[k].alias));
-        }
+        defaults.map(obj,function(newObj){
+            for (var k in newObj) {
+                DOMrepresentation.appendChild(
+                    TEMPLATE(k,newObj[k].value, newObj,newObj[k].alias));
+            }
+        });
+        callback(DOMrepresentation)
     }
-    else
+    else {
         for (var k in obj) {
             DOMrepresentation.appendChild(TEMPLATE(k, obj[k], obj));
         }
+        callback(DOMrepresentation);
+    }
 
-    return DOMrepresentation;
+
 }

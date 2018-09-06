@@ -25,6 +25,7 @@
         drag : true,
         type : true
     };
+
     var iterateNodeObj;
     var inputElement = document.getElementById("inputFiles");
     inputElement.addEventListener("change", handleFiles, false);
@@ -46,7 +47,29 @@
         if(iterateNodeObj)
             iterateNodeObj.destroy();
         document.getElementById("iterateNode-obj").innerHTML = "";
-        iterateNodeObj = new iterateNode(document.getElementById("iterateNode-obj"),{contentEditable:contentEditable,obj:{}});
+        iterateNodeObj = new iterateNode(
+                document.getElementById("iterateNode-obj"),
+                {contentEditable:contentEditable,
+                    obj:{}
+                    /*,
+                    addElementListener : function(newElement,parentElement,liToPrepend){
+                        console.log("element added : ",newElement,
+                                "parentElement:",parentElement
+                        );
+                    },
+                    changeValueListener : function(el){
+                        console.log("change value : ",el);
+                    },
+                    changeKeyListener : function(el){
+                        console.log("changeKeyListener : ", el);
+                    },
+                    removeElementListener : function(el){
+                        console.log("removeElementListener : ", el);
+                    },
+                    changeTypeListener : function(el){
+                        console.log("changeTypeListener : ", el);
+                    }*/
+                });
     }
 </script>
 </body>

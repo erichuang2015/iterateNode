@@ -59,6 +59,8 @@ function addElement(li,liToPrepend,value,key,liToClone,alias){
             key = "newItem" + ( number + 1 );
         }
         else {
+            //coerce key to string
+            key = typeof key === "number" ? "0" + key : key;
             while (Object.keys(elm).indexOf(key) > -1)
                 key = key + Math.floor(Math.random() * (9007199254740991));
 
@@ -69,22 +71,20 @@ function addElement(li,liToPrepend,value,key,liToClone,alias){
         }
         // insertment
         if(liToPrepend) {
-            var keyToPrepend = liToPrepend[defaults.dataKeyOnDOM].key;
-            var temp = JSON.parse(JSON.stringify(elm));
-            for (var OldesKey in elm)
-                delete elm[OldesKey];
-            for (var copyKey in temp) {
-                if (copyKey == keyToPrepend) {
-                    elm[key] = value;
-                    elm[copyKey] = temp[copyKey];
-                }
-                else
-                    elm[copyKey] = temp[copyKey];
+            prependObjectElement(elm, key,
+                value, liToPrepend[defaults.dataKeyOnDOM].key);
+            var children = container.children;
+            for(var ch = 0;ch<children.length;ch++) {
+                var chi = children[ch][defaults.dataKeyOnDOM];
+                chi.value = elm[chi.key];
+                chi.parentElement = elm;
             }
+
         }
         else
             elm[key] = value;
     }
+
     if(liToClone)
         liToClone[defaults.dataKeyOnDOM].parentElement = elm;
 

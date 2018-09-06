@@ -4,8 +4,9 @@ function openObject(e){
         var ul = li.querySelector("ul");
         if (!ul){
             var newObj= li[defaults.dataKeyOnDOM].value;
-            var newUl = ITERATION(newObj);
-            li.appendChild(newUl);
+            ITERATION(newObj,function(newUl){
+                li.appendChild(newUl);
+            });
         }
 
         target.classList.toggle('open');

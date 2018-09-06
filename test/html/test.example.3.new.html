@@ -72,7 +72,7 @@
                 var element = el.alias;
                 element.parentElement.removeChild(element);
             },
-            map : function(ob){
+            map : function(ob,cb){
                 var returnObj = [];
                 var childNodes = Array.isArray(ob) ? ob : ob.childNodes;
                 for(var k = 0; k<childNodes.length;k++){
@@ -103,7 +103,7 @@
                         }
                     }
                 }
-                return returnObj;
+                cb(returnObj);
             },
             alias:function(obj){
                 if(!obj)
@@ -119,7 +119,7 @@
                 else {
                     if ( obj.attributes )
                         for(var i = 0; i<obj.attributes.length;i++) {
-                            attributes += "<span class='list-dom-attributes'>" + obj.attributes[i].nodeName + "=\"" + obj.attributes[i].nodeValue + "\"</span>";
+                            attributes += "<span class='list-dom-attributes'>" + obj.attributes[i].nodeName + "=\"" + obj.attributes[i].nodeValue.trim() + "\"</span>";
                         }
 
                     returnValue = "&lt;" + DOMtype  +
@@ -188,11 +188,13 @@
                     iterateNodeObj.methods.deleteElement(renderedObj);
                     var childNodes = Array.prototype.slice.call(fragment.childNodes);
                     for (var k = 0; k < childNodes.length; k++) {
-                        var value = conf.map([childNodes[k]])[0];
-                        iterateNodeObj.methods
-                                .addElement(renderedObjParent,
-                                renderedObjnextElementSibling,
-                                value.value,k,false,value.alias);
+                        conf.map([childNodes[k]],function(v){
+                            var value = v[0];
+                            iterateNodeObj.methods
+                                    .addElement(renderedObjParent,
+                                    renderedObjnextElementSibling,
+                                    value.value,k,false,value.alias);
+                        })
                     }
                     e.target.removeEventListener("blur", changeInnerHTML);
                     fired = false;

@@ -7,6 +7,9 @@
     user-select: none;
     -webkit-tap-highlight-color:'transparent';
 }
+.iterateNode-obj ul{
+    min-height:20px;
+}
 .iterateNode-obj .iterate-node__caret {
     display: inline-block;
     width: 0;
@@ -102,4 +105,7 @@
     background:#fff;
     border-radius:100%;
     border:1px solid #444;
+}
+ul.iterate-node__enlight-ul{
+    box-shadow: inset 0px 0px 12px 0px rgba(0,0,0,0.5);
 }
