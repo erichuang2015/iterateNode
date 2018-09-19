@@ -275,17 +275,17 @@ function elementRoot(obj,cb){
     var li = document.createElement("li");
 
     if(defaults.map)
-        defaults.map(obj,eR);
+        defaults.map({value:obj},eR);
     else
-        eR(obj);
+        eR({value : obj});
 
     function eR(renderObj) {
         li[defaults.dataKeyOnDOM] = {
-            value: renderObj,
-            alias: obj
+            value: renderObj.value || obj,
+            alias: renderObj.alias || obj
         };
         if (defaults.alias)
-            spanAlias(li, defaults.alias(obj));
+            spanAlias(li, defaults.alias(renderObj.alias || obj));
         if (defaults.contentEditable.add) {
             spanAddItem(li);
         }
@@ -392,7 +392,7 @@ function iterateNode(targetElement,settings) {
         settings ? merge(settings,defaults,true) : defaults;
     $self.state = defaults.obj;
     $self.methods = methods;
-    ITERATION(defaults.obj,function(DOMrepresentation){
+    ITERATION({value:defaults.obj},function(DOMrepresentation){
             elementRoot(defaults.obj,function(rootRepresentation){
                 rootRepresentation.children[0].appendChild(DOMrepresentation);
                 targetElement.className += " iterateNode-obj";
@@ -634,17 +634,16 @@ function ITERATION (obj,callback) {
     var DOMrepresentation = document.createElement("ul");
     if(defaults.map) {
         defaults.map(obj,function(newObj){
-            for (var k in newObj) {
+            for (var k in newObj)
                 DOMrepresentation.appendChild(
-                    TEMPLATE(newObj.key || k,
+                    TEMPLATE(newObj[k].key || k,
                         newObj[k].value, newObj,newObj[k].alias));
-            }
         });
         callback(DOMrepresentation)
     }
     else {
-        for (var k in obj) {
-            DOMrepresentation.appendChild(TEMPLATE(k, obj[k], obj));
+        for (var k in obj.value) {
+            DOMrepresentation.appendChild(TEMPLATE(k, obj.value[k], obj.value));
         }
         callback(DOMrepresentation);
     }
@@ -656,7 +655,7 @@ function openObject(e){
         var li = target.parentElement;
         var ul = li.querySelector("ul");
         if (!ul){
-            var newObj= li[defaults.dataKeyOnDOM].value;
+            var newObj = li[defaults.dataKeyOnDOM];
             ITERATION(newObj,function(newUl){
                 li.appendChild(newUl);
             });

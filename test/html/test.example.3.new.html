@@ -74,7 +74,7 @@
             },
             map : function(ob,cb){
                 var returnObj = [];
-                var childNodes = Array.isArray(ob) ? ob : ob.childNodes;
+                var childNodes = Array.isArray(ob.value) ? ob.value : ob.value.childNodes;
                 for(var k = 0; k<childNodes.length;k++){
                     var obj = childNodes[k];
                     if((obj.nodeName != "#text" || obj.nodeValue.trim().length )
@@ -188,7 +188,7 @@
                     iterateNodeObj.methods.deleteElement(renderedObj);
                     var childNodes = Array.prototype.slice.call(fragment.childNodes);
                     for (var k = 0; k < childNodes.length; k++) {
-                        conf.map([childNodes[k]],function(v){
+                        conf.map({value : [childNodes[k]]},function(v){
                             var value = v[0];
                             iterateNodeObj.methods
                                     .addElement(renderedObjParent,

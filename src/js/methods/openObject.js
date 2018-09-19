@@ -3,7 +3,7 @@ function openObject(e){
         var li = target.parentElement;
         var ul = li.querySelector("ul");
         if (!ul){
-            var newObj= li[defaults.dataKeyOnDOM].value;
+            var newObj = li[defaults.dataKeyOnDOM];
             ITERATION(newObj,function(newUl){
                 li.appendChild(newUl);
             });

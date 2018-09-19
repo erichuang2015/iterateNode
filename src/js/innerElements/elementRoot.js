@@ -4,17 +4,17 @@ function elementRoot(obj,cb){
     var li = document.createElement("li");
 
     if(defaults.map)
-        defaults.map(obj,eR);
+        defaults.map({value:obj},eR);
     else
-        eR(obj);
+        eR({value : obj});
 
     function eR(renderObj) {
         li[defaults.dataKeyOnDOM] = {
-            value: renderObj,
-            alias: obj
+            value: renderObj.value || obj,
+            alias: renderObj.alias || obj
         };
         if (defaults.alias)
-            spanAlias(li, defaults.alias(obj));
+            spanAlias(li, defaults.alias(renderObj.alias || obj));
         if (defaults.contentEditable.add) {
             spanAddItem(li);
         }

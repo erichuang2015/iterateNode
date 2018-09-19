@@ -9,7 +9,6 @@ var defaults = {
         drag : false,
         type : false
     },
-    appendElements : {},
     map : false,
     dataKeyOnDOM : '__iterate-node-data__'
 };

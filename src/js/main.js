@@ -4,7 +4,7 @@ function iterateNode(targetElement,settings) {
         settings ? merge(settings,defaults,true) : defaults;
     $self.state = defaults.obj;
     $self.methods = methods;
-    ITERATION(defaults.obj,function(DOMrepresentation){
+    ITERATION({value:defaults.obj},function(DOMrepresentation){
             elementRoot(defaults.obj,function(rootRepresentation){
                 rootRepresentation.children[0].appendChild(DOMrepresentation);
                 targetElement.className += " iterateNode-obj";
